@@ -18,9 +18,9 @@ import (
 
 var (
 	addr          = flag.String("addr", ":50051", "The server address")
-	dsn           = flag.String("dsn", "postgres://gophkeeper:gophkeeper@localhost:5432/gophkeeper?sslmode=disable", "Database connection string")
-	jwtSecret     = flag.String("jwt-secret", "your-secret-key", "JWT secret key")
-	encryptionKey = flag.String("encryption-key", "01234567890123456789012345678901", "32-byte encryption key for AES-GCM")
+	dsn           = flag.String("dsn", "", "Database connection string (required)")
+	jwtSecret     = flag.String("jwt-secret", "", "JWT secret key (required)")
+	encryptionKey = flag.String("encryption-key", "", "32-byte encryption key for AES-GCM (required)")
 	tlsCert       = flag.String("tls-cert", "", "TLS certificate file path")
 	tlsKey        = flag.String("tls-key", "", "TLS key file path")
 	enableTLS     = flag.Bool("enable-tls", false, "Enable TLS")
@@ -49,6 +49,19 @@ func main() {
 	}
 	if envTLS := os.Getenv("ENABLE_TLS"); envTLS != "" {
 		*enableTLS = envTLS == "true" || envTLS == "1"
+	}
+
+	if *dsn == "" {
+		log.Fatal("Error: -dsn flag is required. Please provide a database connection string.")
+	}
+	if *jwtSecret == "" {
+		log.Fatal("Error: -jwt-secret flag is required. Please provide a JWT secret key.")
+	}
+	if *encryptionKey == "" {
+		log.Fatal("Error: -encryption-key flag is required. Please provide a 32-byte encryption key.")
+	}
+	if len(*encryptionKey) != 32 {
+		log.Fatalf("Error: encryption key must be exactly 32 bytes, got %d bytes", len(*encryptionKey))
 	}
 
 	logger, err := zap.NewProduction()

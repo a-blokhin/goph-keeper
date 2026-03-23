@@ -8,21 +8,25 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/debug"
+	"strings"
 
 	"github.com/a-blokhin/goph-keeper/api/proto"
 	"github.com/a-blokhin/goph-keeper/internal/client"
 	"go.uber.org/zap"
+	"golang.org/x/term"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
+	version = "dev"
+
 	serverAddr = flag.String("server", "localhost:50051", "Server address")
 	enableTLS  = flag.Bool("tls", false, "Enable TLS")
 	tlsCert    = flag.String("tls-cert", "", "TLS certificate file path (for testing)")
 	username   = flag.String("username", "", "Username/email for register/login")
-	password   = flag.String("password", "", "Password for register/login")
 )
 
 func main() {
@@ -105,35 +109,43 @@ func createConnection(addr string, enableTLS bool, tlsCert string) (*grpc.Client
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
 
-	return grpc.Dial(addr, opts...)
+	return grpc.NewClient(addr, opts...)
 }
 
 func handleRegister(ctx context.Context, cli *client.Client, args []string) {
 	email := *username
-	password := *password
+	var password string
 
-	if email == "" || password == "" {
-		if len(args) >= 4 && args[0] == "--username" && args[2] == "--password" {
-			email = args[1]
-			password = args[3]
-		} else if len(args) < 2 {
-			fmt.Println("Usage: register <email> <password>")
-			fmt.Println("       register --username <email> --password <password>")
-			os.Exit(1)
-		} else {
+	if email == "" {
+		if len(args) >= 1 {
 			email = args[0]
-			password = args[1]
+		} else {
+			fmt.Print("Enter email: ")
+			fmt.Scanln(&email)
 		}
+	}
+
+	if email == "" {
+		fmt.Fprintln(os.Stderr, "Error: email is required")
+		fmt.Fprintln(os.Stderr, "Usage: register <email>")
+		fmt.Fprintln(os.Stderr, "       register --username <email>")
+		os.Exit(1)
+	}
+
+	password = readPassword("Enter password: ")
+	if password == "" {
+		fmt.Fprintln(os.Stderr, "Error: password is required")
+		os.Exit(1)
 	}
 
 	token, err := cli.Register(ctx, email, password)
 	if err != nil {
-		fmt.Printf("Registration failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Registration failed: %v\n", err)
 		os.Exit(1)
 	}
 
 	if err := cli.SaveToken(token); err != nil {
-		fmt.Printf("Warning: failed to save token: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Warning: failed to save token: %v\n", err)
 	}
 
 	fmt.Println("Registration successful!")
@@ -141,33 +153,55 @@ func handleRegister(ctx context.Context, cli *client.Client, args []string) {
 
 func handleLogin(ctx context.Context, cli *client.Client, args []string) {
 	email := *username
-	password := *password
+	var password string
 
-	if email == "" || password == "" {
-		if len(args) >= 4 && args[0] == "--username" && args[2] == "--password" {
-			email = args[1]
-			password = args[3]
-		} else if len(args) < 2 {
-			fmt.Println("Usage: login <email> <password>")
-			fmt.Println("       login --username <email> --password <password>")
-			os.Exit(1)
-		} else {
+	if email == "" {
+		if len(args) >= 1 {
 			email = args[0]
-			password = args[1]
+		} else {
+			fmt.Print("Enter email: ")
+			fmt.Scanln(&email)
 		}
+	}
+
+	if email == "" {
+		fmt.Fprintln(os.Stderr, "Error: email is required")
+		fmt.Fprintln(os.Stderr, "Usage: login <email>")
+		fmt.Fprintln(os.Stderr, "       login --username <email>")
+		os.Exit(1)
+	}
+
+	password = readPassword("Enter password: ")
+	if password == "" {
+		fmt.Fprintln(os.Stderr, "Error: password is required")
+		os.Exit(1)
 	}
 
 	token, err := cli.Login(ctx, email, password)
 	if err != nil {
-		fmt.Printf("Login failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Login failed: %v\n", err)
 		os.Exit(1)
 	}
 
 	if err := cli.SaveToken(token); err != nil {
-		fmt.Printf("Warning: failed to save token: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Warning: failed to save token: %v\n", err)
 	}
 
 	fmt.Println("Login successful!")
+}
+
+func readPassword(prompt string) string {
+	fmt.Print(prompt)
+
+	passwordBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
+	fmt.Println()
+
+	if err != nil {
+		log.Printf("Error reading password: %v", err)
+		return ""
+	}
+
+	return strings.TrimSpace(string(passwordBytes))
 }
 
 func handleCredential(ctx context.Context, cli *client.Client, args []string) {
@@ -215,7 +249,7 @@ func handleCreateCredential(ctx context.Context, cli *client.Client, args []stri
 
 	cred, err := cli.CreateCredential(ctx, title, login, password, meta)
 	if err != nil {
-		fmt.Printf("Failed to create credential: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to create credential: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -239,7 +273,7 @@ func handleUpdateCredential(ctx context.Context, cli *client.Client, args []stri
 
 	cred, err := cli.UpdateCredential(ctx, id, title, login, password, meta)
 	if err != nil {
-		fmt.Printf("Failed to update credential: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to update credential: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -255,7 +289,7 @@ func handleDeleteCredential(ctx context.Context, cli *client.Client, args []stri
 	id := args[0]
 
 	if err := cli.DeleteCredential(ctx, id); err != nil {
-		fmt.Printf("Failed to delete credential: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to delete credential: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -265,7 +299,7 @@ func handleDeleteCredential(ctx context.Context, cli *client.Client, args []stri
 func handleListCredentials(ctx context.Context, cli *client.Client) {
 	creds, err := cli.ListCredentials(ctx)
 	if err != nil {
-		fmt.Printf("Failed to list credentials: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to list credentials: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -324,7 +358,7 @@ func handleCreateText(ctx context.Context, cli *client.Client, args []string) {
 
 	text, err := cli.CreateTextData(ctx, title, data, meta)
 	if err != nil {
-		fmt.Printf("Failed to create text data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to create text data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -347,7 +381,7 @@ func handleUpdateText(ctx context.Context, cli *client.Client, args []string) {
 
 	text, err := cli.UpdateTextData(ctx, id, title, data, meta)
 	if err != nil {
-		fmt.Printf("Failed to update text data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to update text data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -363,7 +397,7 @@ func handleDeleteText(ctx context.Context, cli *client.Client, args []string) {
 	id := args[0]
 
 	if err := cli.DeleteTextData(ctx, id); err != nil {
-		fmt.Printf("Failed to delete text data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to delete text data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -373,7 +407,7 @@ func handleDeleteText(ctx context.Context, cli *client.Client, args []string) {
 func handleListText(ctx context.Context, cli *client.Client) {
 	texts, err := cli.ListTextData(ctx)
 	if err != nil {
-		fmt.Printf("Failed to list text data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to list text data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -432,13 +466,13 @@ func handleCreateBinary(ctx context.Context, cli *client.Client, args []string) 
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		fmt.Printf("Failed to read file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to read file: %v\n", err)
 		os.Exit(1)
 	}
 
 	binary, err := cli.CreateBinaryData(ctx, title, data, meta)
 	if err != nil {
-		fmt.Printf("Failed to create binary data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to create binary data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -461,13 +495,13 @@ func handleUpdateBinary(ctx context.Context, cli *client.Client, args []string) 
 
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		fmt.Printf("Failed to read file: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to read file: %v\n", err)
 		os.Exit(1)
 	}
 
 	binary, err := cli.UpdateBinaryData(ctx, id, title, data, meta)
 	if err != nil {
-		fmt.Printf("Failed to update binary data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to update binary data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -483,7 +517,7 @@ func handleDeleteBinary(ctx context.Context, cli *client.Client, args []string) 
 	id := args[0]
 
 	if err := cli.DeleteBinaryData(ctx, id); err != nil {
-		fmt.Printf("Failed to delete binary data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to delete binary data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -493,7 +527,7 @@ func handleDeleteBinary(ctx context.Context, cli *client.Client, args []string) 
 func handleListBinary(ctx context.Context, cli *client.Client) {
 	binaries, err := cli.ListBinaryData(ctx)
 	if err != nil {
-		fmt.Printf("Failed to list binary data: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to list binary data: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -555,7 +589,7 @@ func handleCreateCard(ctx context.Context, cli *client.Client, args []string) {
 
 	card, err := cli.CreateCard(ctx, title, cardNumber, cardHolder, expiry, cvv, meta)
 	if err != nil {
-		fmt.Printf("Failed to create card: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to create card: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -581,7 +615,7 @@ func handleUpdateCard(ctx context.Context, cli *client.Client, args []string) {
 
 	card, err := cli.UpdateCard(ctx, id, title, cardNumber, cardHolder, expiry, cvv, meta)
 	if err != nil {
-		fmt.Printf("Failed to update card: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to update card: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -597,7 +631,7 @@ func handleDeleteCard(ctx context.Context, cli *client.Client, args []string) {
 	id := args[0]
 
 	if err := cli.DeleteCard(ctx, id); err != nil {
-		fmt.Printf("Failed to delete card: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to delete card: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -607,7 +641,7 @@ func handleDeleteCard(ctx context.Context, cli *client.Client, args []string) {
 func handleListCards(ctx context.Context, cli *client.Client) {
 	cards, err := cli.ListCards(ctx)
 	if err != nil {
-		fmt.Printf("Failed to list cards: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Failed to list cards: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -618,14 +652,20 @@ func handleListCards(ctx context.Context, cli *client.Client) {
 
 	fmt.Println("Cards:")
 	for _, card := range cards {
-		fmt.Printf("  ID: %s, Title: %s, Card Number: ****%s\n", card.Id, card.Title, card.CardNumber[len(card.CardNumber)-4:])
+		var maskedNumber string
+		if len(card.CardNumber) >= 4 {
+			maskedNumber = "****" + card.CardNumber[len(card.CardNumber)-4:]
+		} else {
+			maskedNumber = card.CardNumber
+		}
+		fmt.Printf("  ID: %s, Title: %s, Card Number: %s\n", card.Id, card.Title, maskedNumber)
 	}
 }
 
 func handleSync(ctx context.Context, cli *client.Client, args []string) {
 	resp, err := cli.Sync(ctx)
 	if err != nil {
-		fmt.Printf("Sync failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Sync failed: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -638,8 +678,24 @@ func handleSync(ctx context.Context, cli *client.Client, args []string) {
 
 func printVersion() {
 	fmt.Println("GophKeeper Client")
-	fmt.Println("Version: 1.0.0")
-	fmt.Println("Build Date: 2024-01-01")
+	fmt.Printf("Version: %s\n", version)
+
+	buildDate := "unknown"
+	commit := "unknown"
+
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" && commit == "unknown" {
+				commit = setting.Value
+			}
+			if setting.Key == "vcs.time" && buildDate == "unknown" {
+				buildDate = setting.Value
+			}
+		}
+	}
+
+	fmt.Printf("Build Date: %s\n", buildDate)
+	fmt.Printf("Commit: %s\n", commit)
 }
 
 func printUsage() {
@@ -648,8 +704,8 @@ func printUsage() {
 	fmt.Println("Usage: gophkeeper <command> [args]")
 	fmt.Println()
 	fmt.Println("Commands:")
-	fmt.Println("  register <email> <password>     Register a new user")
-	fmt.Println("  login <email> <password>        Login to the server")
+	fmt.Println("  register <email>                Register a new user (password will be prompted)")
+	fmt.Println("  login <email>                   Login to the server (password will be prompted)")
 	fmt.Println("  credential <command> [args]     Manage credentials")
 	fmt.Println("  text <command> [args]           Manage text data")
 	fmt.Println("  binary <command> [args]         Manage binary data")
@@ -661,4 +717,8 @@ func printUsage() {
 	fmt.Println("  -server <address>               Server address (default: localhost:50051)")
 	fmt.Println("  -tls                            Enable TLS")
 	fmt.Println("  -tls-cert <path>                TLS certificate file path")
+	fmt.Println("  -username <email>               Username/email (optional, can be provided as argument)")
+	fmt.Println()
+	fmt.Println("Note: Passwords are never passed as command-line arguments for security reasons.")
+	fmt.Println("      They will be securely prompted during login/register operations.")
 }

@@ -59,20 +59,56 @@ go build -o bin/server ./cmd/server
 go build -o goph_keeper ./cmd/client
 ```
 
+### Сборка с информацией о версии
+
+Для внедрения информации о версии на этапе компиляции используйте флаг `-ldflags`:
+
+```bash
+# Простая сборка с версией
+go build -ldflags "-X main.version=1.0.0" -o goph_keeper ./cmd/client
+
+# Пример для конкретной версии
+VERSION=1.0.0
+go build -ldflags "-X main.version=${VERSION}" -o goph_keeper ./cmd/client
+```
+
+Проверить версию можно командой:
+
+```bash
+./goph_keeper version
+```
+
+Пример вывода:
+
+```
+GophKeeper Client
+Version: 1.2.3
+Build Date: 2026-03-21T19:04:31Z
+Commit: 612d2593e1bbda93318bb257c3afdfdcd49edcdd
+```
+
 ### Сборка для разных платформ
 
 ```bash
+# Переменные для версии
+VERSION=1.0.0
+LDFLAGS="-X main.version=${VERSION}"
+
 # Linux
-GOOS=linux GOARCH=amd64 go build -o goph_keeper-linux-amd64 ./cmd/client
+GOOS=linux GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o goph_keeper-linux-amd64 ./cmd/client
 GOOS=linux GOARCH=amd64 go build -o bin/server-linux-amd64 ./cmd/server
 
 # Windows
-GOOS=windows GOARCH=amd64 go build -o goph_keeper-windows-amd64.exe ./cmd/client
+GOOS=windows GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o goph_keeper-windows-amd64.exe ./cmd/client
 GOOS=windows GOARCH=amd64 go build -o bin/server-windows-amd64.exe ./cmd/server
 
 # macOS
-GOOS=darwin GOARCH=amd64 go build -o goph_keeper-darwin-amd64 ./cmd/client
+GOOS=darwin GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o goph_keeper-darwin-amd64 ./cmd/client
 GOOS=darwin GOARCH=amd64 go build -o bin/server-darwin-amd64 ./cmd/server
+
+# macOS ARM (Apple Silicon)
+GOOS=darwin GOARCH=arm64 go build -ldflags "${LDFLAGS}" -o goph_keeper-darwin-arm64 ./cmd/client
+GOOS=darwin GOARCH=arm64 go build -o bin/server-darwin-arm64 ./cmd/server
 ```
 
 ## Запуск через Docker Compose
@@ -80,6 +116,15 @@ GOOS=darwin GOARCH=amd64 go build -o bin/server-darwin-amd64 ./cmd/server
 Простейший способ запуска GophKeeper - использование Docker Compose:
 
 ```bash
+# Создайте файл .env на основе .env.example
+cp .env.example .env
+
+# Отредактируйте .env и установите безопасные значения для JWT_SECRET и ENCRYPTION_KEY
+# Генерация ключей:
+# JWT_SECRET=$(openssl rand -base64 32)
+# ENCRYPTION_KEY=$(openssl rand -base64 32 | tr -d '=' | cut -c1-32)
+
+# Запустите сервисы
 docker-compose up -d
 ```
 
@@ -117,28 +162,64 @@ go build -o bin/server ./cmd/server
 sudo mv goph_keeper /usr/local/bin/
 ```
 
-4. **Запуск сервера**:
+4. **Генерация ключей шифрования**:
+
+```bash
+# Генерация 32-байтного ключа шифрования для AES-GCM
+ENCRYPTION_KEY=$(openssl rand -base64 32 | tr -d '=' | cut -c1-32)
+
+# Генерация секретного ключа для JWT
+JWT_SECRET=$(openssl rand -base64 32)
+```
+
+5. **Запуск сервера**:
 
 ```bash
 ./bin/server \
-  -address :50051 \
+  -addr :50051 \
   -dsn "host=localhost port=5432 user=gophkeeper password=gophkeeper_password dbname=gophkeeper sslmode=disable" \
-  -jwt-secret "your-secret-key"
+  -jwt-secret "${JWT_SECRET}" \
+  -encryption-key "${ENCRYPTION_KEY}"
 ```
+
+Сервер требует обязательного указания следующих параметров:
+
+- `-dsn`: Строка подключения к базе данных (обязательно)
+- `-jwt-secret`: Секретный ключ для JWT токенов (обязательно)
+- `-encryption-key`: 32-байтный ключ шифрования для AES-GCM (обязательно)
+
 
 ## Использование CLI
 
 ### Регистрация нового пользователя
 
 ```bash
-goph_keeper register user@example.com password123
+goph_keeper register user@example.com
+# Пароль будет запрошен
+```
+
+Или с флагом:
+
+```bash
+goph_keeper --username user@example.com register
+# Пароль будет запрошен
 ```
 
 ### Вход в систему
 
 ```bash
-goph_keeper login user@example.com password123
+goph_keeper login user@example.com
+# Пароль будет запрошен
 ```
+
+Или с флагом:
+
+```bash
+goph_keeper --username user@example.com login
+# Пароль будет запрошен
+```
+
+**Важно:** Пароли никогда не передаются через аргументы командной строки из соображений безопасности. Они всегда запрашиваются интерактивно с использованием библиотеки `golang.org/x/term`, которая обеспечивает безопасный ввод без отображения символов на экране.
 
 ### Управление парами логин/пароль
 
