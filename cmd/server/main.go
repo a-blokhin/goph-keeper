@@ -23,7 +23,6 @@ var (
 	encryptionKey = flag.String("encryption-key", "", "32-byte encryption key for AES-GCM (required)")
 	tlsCert       = flag.String("tls-cert", "", "TLS certificate file path")
 	tlsKey        = flag.String("tls-key", "", "TLS key file path")
-	enableTLS     = flag.Bool("enable-tls", false, "Enable TLS")
 )
 
 func main() {
@@ -47,9 +46,6 @@ func main() {
 	if envKey := os.Getenv("TLS_KEY"); envKey != "" {
 		*tlsKey = envKey
 	}
-	if envTLS := os.Getenv("ENABLE_TLS"); envTLS != "" {
-		*enableTLS = envTLS == "true" || envTLS == "1"
-	}
 
 	if *dsn == "" {
 		log.Fatal("Error: -dsn flag is required. Please provide a database connection string.")
@@ -72,7 +68,6 @@ func main() {
 
 	logger.Info("Starting GophKeeper server",
 		zap.String("addr", *addr),
-		zap.Bool("tls", *enableTLS),
 	)
 
 	ctx := context.Background()
@@ -90,19 +85,17 @@ func main() {
 
 	var serverOpts []grpc.ServerOption
 
-	if *enableTLS {
-		if *tlsCert == "" || *tlsKey == "" {
-			logger.Fatal("TLS certificate and key files are required when TLS is enabled")
-		}
-
-		creds, err := credentials.NewServerTLSFromFile(*tlsCert, *tlsKey)
-		if err != nil {
-			logger.Fatal("Failed to load TLS credentials", zap.Error(err))
-		}
-
-		serverOpts = append(serverOpts, grpc.Creds(creds))
-		logger.Info("TLS enabled")
+	if *tlsCert == "" || *tlsKey == "" {
+		logger.Fatal("TLS certificate and key files are required when TLS is enabled")
 	}
+
+	creds, err := credentials.NewServerTLSFromFile(*tlsCert, *tlsKey)
+	if err != nil {
+		logger.Fatal("Failed to load TLS credentials", zap.Error(err))
+	}
+
+	serverOpts = append(serverOpts, grpc.Creds(creds))
+	logger.Info("TLS enabled")
 
 	grpcServer := grpc.NewServer(serverOpts...)
 	proto.RegisterKeeperServiceServer(grpcServer, container.Server)
