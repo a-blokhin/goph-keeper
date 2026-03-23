@@ -194,7 +194,7 @@ func (s *Server) CreateCredential(ctx context.Context, req *proto.CredentialRequ
 		return nil, status.Error(codes.Internal, "failed to create credential")
 	}
 
-	return s.credentialToProto(credential), nil
+	return s.credentialToProto(credential)
 }
 
 func (s *Server) GetCredential(ctx context.Context, req *proto.GetRequest) (*proto.CredentialResponse, error) {
@@ -214,7 +214,7 @@ func (s *Server) GetCredential(ctx context.Context, req *proto.GetRequest) (*pro
 		return nil, status.Error(codes.Internal, "failed to get credential")
 	}
 
-	return s.credentialToProto(credential), nil
+	return s.credentialToProto(credential)
 }
 
 func (s *Server) UpdateCredential(ctx context.Context, req *proto.UpdateCredentialRequest) (*proto.CredentialResponse, error) {
@@ -250,7 +250,7 @@ func (s *Server) UpdateCredential(ctx context.Context, req *proto.UpdateCredenti
 		return nil, status.Error(codes.Internal, "failed to update credential")
 	}
 
-	return s.credentialToProto(credential), nil
+	return s.credentialToProto(credential)
 }
 
 func (s *Server) DeleteCredential(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
@@ -286,7 +286,12 @@ func (s *Server) ListCredentials(ctx context.Context, _ *emptypb.Empty) (*proto.
 
 	protoCredentials := make([]*proto.CredentialResponse, len(credentials))
 	for i, cred := range credentials {
-		protoCredentials[i] = s.credentialToProto(cred)
+		protoCred, err := s.credentialToProto(cred)
+		if err != nil {
+			s.logger.Error("Failed to convert credential to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert credential")
+		}
+		protoCredentials[i] = protoCred
 	}
 
 	return &proto.CredentialsListResponse{
@@ -321,7 +326,7 @@ func (s *Server) CreateTextData(ctx context.Context, req *proto.TextDataRequest)
 		return nil, status.Error(codes.Internal, "failed to create text data")
 	}
 
-	return s.textDataToProto(textData), nil
+	return s.textDataToProto(textData)
 }
 
 func (s *Server) GetTextData(ctx context.Context, req *proto.GetRequest) (*proto.TextDataResponse, error) {
@@ -341,7 +346,7 @@ func (s *Server) GetTextData(ctx context.Context, req *proto.GetRequest) (*proto
 		return nil, status.Error(codes.Internal, "failed to get text data")
 	}
 
-	return s.textDataToProto(textData), nil
+	return s.textDataToProto(textData)
 }
 
 func (s *Server) UpdateTextData(ctx context.Context, req *proto.UpdateTextDataRequest) (*proto.TextDataResponse, error) {
@@ -376,7 +381,7 @@ func (s *Server) UpdateTextData(ctx context.Context, req *proto.UpdateTextDataRe
 		return nil, status.Error(codes.Internal, "failed to update text data")
 	}
 
-	return s.textDataToProto(textData), nil
+	return s.textDataToProto(textData)
 }
 
 func (s *Server) DeleteTextData(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
@@ -412,7 +417,12 @@ func (s *Server) ListTextData(ctx context.Context, _ *emptypb.Empty) (*proto.Tex
 
 	protoTextData := make([]*proto.TextDataResponse, len(textDataList))
 	for i, td := range textDataList {
-		protoTextData[i] = s.textDataToProto(td)
+		protoTD, err := s.textDataToProto(td)
+		if err != nil {
+			s.logger.Error("Failed to convert text data to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert text data")
+		}
+		protoTextData[i] = protoTD
 	}
 
 	return &proto.TextDataListResponse{
@@ -450,7 +460,7 @@ func (s *Server) CreateBinaryData(ctx context.Context, req *proto.BinaryDataRequ
 		return nil, status.Error(codes.Internal, "failed to create binary data")
 	}
 
-	return s.binaryDataToProto(binaryData), nil
+	return s.binaryDataToProto(binaryData)
 }
 
 func (s *Server) GetBinaryData(ctx context.Context, req *proto.GetRequest) (*proto.BinaryDataResponse, error) {
@@ -470,7 +480,7 @@ func (s *Server) GetBinaryData(ctx context.Context, req *proto.GetRequest) (*pro
 		return nil, status.Error(codes.Internal, "failed to get binary data")
 	}
 
-	return s.binaryDataToProto(binaryData), nil
+	return s.binaryDataToProto(binaryData)
 }
 
 func (s *Server) UpdateBinaryData(ctx context.Context, req *proto.UpdateBinaryDataRequest) (*proto.BinaryDataResponse, error) {
@@ -508,7 +518,7 @@ func (s *Server) UpdateBinaryData(ctx context.Context, req *proto.UpdateBinaryDa
 		return nil, status.Error(codes.Internal, "failed to update binary data")
 	}
 
-	return s.binaryDataToProto(binaryData), nil
+	return s.binaryDataToProto(binaryData)
 }
 
 func (s *Server) DeleteBinaryData(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
@@ -544,7 +554,12 @@ func (s *Server) ListBinaryData(ctx context.Context, _ *emptypb.Empty) (*proto.B
 
 	protoBinaryData := make([]*proto.BinaryDataResponse, len(binaryDataList))
 	for i, bd := range binaryDataList {
-		protoBinaryData[i] = s.binaryDataToProto(bd)
+		protoBD, err := s.binaryDataToProto(bd)
+		if err != nil {
+			s.logger.Error("Failed to convert binary data to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert binary data")
+		}
+		protoBinaryData[i] = protoBD
 	}
 
 	return &proto.BinaryDataListResponse{
@@ -600,7 +615,7 @@ func (s *Server) CreateCard(ctx context.Context, req *proto.CardRequest) (*proto
 		return nil, status.Error(codes.Internal, "failed to create card")
 	}
 
-	return s.cardToProto(card), nil
+	return s.cardToProto(card)
 }
 
 func (s *Server) GetCard(ctx context.Context, req *proto.GetRequest) (*proto.CardResponse, error) {
@@ -620,7 +635,7 @@ func (s *Server) GetCard(ctx context.Context, req *proto.GetRequest) (*proto.Car
 		return nil, status.Error(codes.Internal, "failed to get card")
 	}
 
-	return s.cardToProto(card), nil
+	return s.cardToProto(card)
 }
 
 func (s *Server) UpdateCard(ctx context.Context, req *proto.UpdateCardRequest) (*proto.CardResponse, error) {
@@ -676,7 +691,7 @@ func (s *Server) UpdateCard(ctx context.Context, req *proto.UpdateCardRequest) (
 		return nil, status.Error(codes.Internal, "failed to update card")
 	}
 
-	return s.cardToProto(card), nil
+	return s.cardToProto(card)
 }
 
 func (s *Server) DeleteCard(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
@@ -712,7 +727,12 @@ func (s *Server) ListCards(ctx context.Context, _ *emptypb.Empty) (*proto.CardsL
 
 	protoCards := make([]*proto.CardResponse, len(cards))
 	for i, card := range cards {
-		protoCards[i] = s.cardToProto(card)
+		protoCard, err := s.cardToProto(card)
+		if err != nil {
+			s.logger.Error("Failed to convert card to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert card")
+		}
+		protoCards[i] = protoCard
 	}
 
 	return &proto.CardsListResponse{
@@ -736,22 +756,42 @@ func (s *Server) Sync(ctx context.Context, req *proto.SyncRequest) (*proto.SyncR
 
 	credentials := make([]*proto.CredentialResponse, len(resp.Credentials))
 	for i, cred := range resp.Credentials {
-		credentials[i] = s.credentialToProto(cred)
+		protoCred, err := s.credentialToProto(cred)
+		if err != nil {
+			s.logger.Error("Failed to convert credential to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert credential")
+		}
+		credentials[i] = protoCred
 	}
 
 	textData := make([]*proto.TextDataResponse, len(resp.TextData))
 	for i, td := range resp.TextData {
-		textData[i] = s.textDataToProto(td)
+		protoTD, err := s.textDataToProto(td)
+		if err != nil {
+			s.logger.Error("Failed to convert text data to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert text data")
+		}
+		textData[i] = protoTD
 	}
 
 	binaryData := make([]*proto.BinaryDataResponse, len(resp.BinaryData))
 	for i, bd := range resp.BinaryData {
-		binaryData[i] = s.binaryDataToProto(bd)
+		protoBD, err := s.binaryDataToProto(bd)
+		if err != nil {
+			s.logger.Error("Failed to convert binary data to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert binary data")
+		}
+		binaryData[i] = protoBD
 	}
 
 	cards := make([]*proto.CardResponse, len(resp.Cards))
 	for i, card := range resp.Cards {
-		cards[i] = s.cardToProto(card)
+		protoCard, err := s.cardToProto(card)
+		if err != nil {
+			s.logger.Error("Failed to convert card to proto", zap.Error(err))
+			return nil, status.Error(codes.Internal, "failed to convert card")
+		}
+		cards[i] = protoCard
 	}
 
 	return &proto.SyncResponse{
@@ -787,13 +827,12 @@ func (s *Server) extractUserID(ctx context.Context) (string, error) {
 	return claims.UserID, nil
 }
 
-func (s *Server) credentialToProto(cred *model.Credential) *proto.CredentialResponse {
+func (s *Server) credentialToProto(cred *model.Credential) (*proto.CredentialResponse, error) {
 	// Decrypt password
 	decryptedPassword, err := s.encryptor.Decrypt(cred.PasswordEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt password", zap.Error(err))
-		// Return empty password on decryption error
-		decryptedPassword = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt password")
 	}
 
 	return &proto.CredentialResponse{
@@ -805,16 +844,15 @@ func (s *Server) credentialToProto(cred *model.Credential) *proto.CredentialResp
 		Version:   int32(cred.Version),
 		CreatedAt: timestamppb.New(cred.CreatedAt),
 		UpdatedAt: timestamppb.New(cred.UpdatedAt),
-	}
+	}, nil
 }
 
-func (s *Server) textDataToProto(td *model.TextData) *proto.TextDataResponse {
+func (s *Server) textDataToProto(td *model.TextData) (*proto.TextDataResponse, error) {
 	// Decrypt data
 	decryptedData, err := s.encryptor.Decrypt(td.DataEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt text data", zap.Error(err))
-		// Return empty data on decryption error
-		decryptedData = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt text data")
 	}
 
 	return &proto.TextDataResponse{
@@ -825,16 +863,15 @@ func (s *Server) textDataToProto(td *model.TextData) *proto.TextDataResponse {
 		Version:   int32(td.Version),
 		CreatedAt: timestamppb.New(td.CreatedAt),
 		UpdatedAt: timestamppb.New(td.UpdatedAt),
-	}
+	}, nil
 }
 
-func (s *Server) binaryDataToProto(bd *model.BinaryData) *proto.BinaryDataResponse {
+func (s *Server) binaryDataToProto(bd *model.BinaryData) (*proto.BinaryDataResponse, error) {
 	// Decrypt data
 	decryptedData, err := s.encryptor.DecryptBytes(bd.DataEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt binary data", zap.Error(err))
-		// Return empty data on decryption error
-		decryptedData = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt binary data")
 	}
 
 	return &proto.BinaryDataResponse{
@@ -845,33 +882,33 @@ func (s *Server) binaryDataToProto(bd *model.BinaryData) *proto.BinaryDataRespon
 		Version:   int32(bd.Version),
 		CreatedAt: timestamppb.New(bd.CreatedAt),
 		UpdatedAt: timestamppb.New(bd.UpdatedAt),
-	}
+	}, nil
 }
 
-func (s *Server) cardToProto(card *model.Card) *proto.CardResponse {
+func (s *Server) cardToProto(card *model.Card) (*proto.CardResponse, error) {
 	// Decrypt card data
 	decryptedCardNumber, err := s.encryptor.Decrypt(card.CardNumberEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt card number", zap.Error(err))
-		decryptedCardNumber = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt card number")
 	}
 
 	decryptedCardHolder, err := s.encryptor.Decrypt(card.CardHolderEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt card holder", zap.Error(err))
-		decryptedCardHolder = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt card holder")
 	}
 
 	decryptedExpiry, err := s.encryptor.Decrypt(card.ExpiryEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt expiry", zap.Error(err))
-		decryptedExpiry = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt expiry")
 	}
 
 	decryptedCVV, err := s.encryptor.Decrypt(card.CVVEncrypted)
 	if err != nil {
 		s.logger.Error("Failed to decrypt CVV", zap.Error(err))
-		decryptedCVV = []byte{}
+		return nil, status.Error(codes.Internal, "failed to decrypt CVV")
 	}
 
 	return &proto.CardResponse{
@@ -885,5 +922,5 @@ func (s *Server) cardToProto(card *model.Card) *proto.CardResponse {
 		Version:    int32(card.Version),
 		CreatedAt:  timestamppb.New(card.CreatedAt),
 		UpdatedAt:  timestamppb.New(card.UpdatedAt),
-	}
+	}, nil
 }
