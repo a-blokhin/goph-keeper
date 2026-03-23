@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/a-blokhin/goph-keeper/internal/model"
@@ -32,7 +34,15 @@ func (r *UserRepository) Create(ctx context.Context, user *model.User) error {
 		user.UpdatedAt,
 	).Scan(&user.ID)
 
-	return err
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return model.ErrUserAlreadyExists
+		}
+		return err
+	}
+
+	return nil
 }
 
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*model.User, error) {
@@ -52,8 +62,11 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*model.U
 		&user.UpdatedAt,
 	)
 
-	if err == pgx.ErrNoRows {
-		return nil, model.ErrUserNotFound
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, model.ErrUserNotFound
+		}
+		return nil, err
 	}
-	return &user, err
+	return &user, nil
 }

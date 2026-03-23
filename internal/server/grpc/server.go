@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"errors"
 
 	"github.com/a-blokhin/goph-keeper/api/proto"
 	"github.com/a-blokhin/goph-keeper/internal/crypto"
@@ -137,6 +138,9 @@ func (s *Server) Register(ctx context.Context, req *proto.RegisterRequest) (*pro
 	user, token, err := s.registerUsecase.Execute(ctx, req.Email, req.Password)
 	if err != nil {
 		s.logger.Error("Register failed", zap.Error(err))
+		if errors.Is(err, model.ErrUserAlreadyExists) {
+			return nil, status.Error(codes.AlreadyExists, "user already exists")
+		}
 		return nil, status.Error(codes.Internal, "registration failed")
 	}
 
@@ -153,7 +157,7 @@ func (s *Server) Login(ctx context.Context, req *proto.LoginRequest) (*proto.Log
 	user, token, err := s.loginUsecase.Execute(ctx, req.Email, req.Password)
 	if err != nil {
 		s.logger.Error("Login failed", zap.Error(err))
-		if err == model.ErrInvalidCredentials {
+		if errors.Is(err, model.ErrInvalidCredentials) {
 			return nil, status.Error(codes.Unauthenticated, "invalid credentials")
 		}
 		return nil, status.Error(codes.Internal, "login failed")
@@ -208,7 +212,7 @@ func (s *Server) GetCredential(ctx context.Context, req *proto.GetRequest) (*pro
 	credential, err := s.credentialGetUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("GetCredential failed", zap.Error(err))
-		if err == model.ErrCredentialNotFound {
+		if errors.Is(err, model.ErrCredentialNotFound) {
 			return nil, status.Error(codes.NotFound, "credential not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to get credential")
@@ -244,8 +248,14 @@ func (s *Server) UpdateCredential(ctx context.Context, req *proto.UpdateCredenti
 	err = s.credentialUpdateUsecase.Execute(ctx, userID, credential)
 	if err != nil {
 		s.logger.Error("UpdateCredential failed", zap.Error(err))
-		if err == model.ErrVersionConflict {
+		if errors.Is(err, model.ErrVersionConflict) {
 			return nil, status.Error(codes.Aborted, "version conflict")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
+		if errors.Is(err, model.ErrCredentialNotFound) {
+			return nil, status.Error(codes.NotFound, "credential not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to update credential")
 	}
@@ -264,6 +274,12 @@ func (s *Server) DeleteCredential(ctx context.Context, req *proto.DeleteRequest)
 	err = s.credentialDeleteUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("DeleteCredential failed", zap.Error(err))
+		if errors.Is(err, model.ErrCredentialNotFound) {
+			return nil, status.Error(codes.NotFound, "credential not found")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
 		return nil, status.Error(codes.Internal, "failed to delete credential")
 	}
 
@@ -340,7 +356,7 @@ func (s *Server) GetTextData(ctx context.Context, req *proto.GetRequest) (*proto
 	textData, err := s.textDataGetUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("GetTextData failed", zap.Error(err))
-		if err == model.ErrTextDataNotFound {
+		if errors.Is(err, model.ErrTextDataNotFound) {
 			return nil, status.Error(codes.NotFound, "text data not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to get text data")
@@ -375,8 +391,14 @@ func (s *Server) UpdateTextData(ctx context.Context, req *proto.UpdateTextDataRe
 	err = s.textDataUpdateUsecase.Execute(ctx, userID, textData)
 	if err != nil {
 		s.logger.Error("UpdateTextData failed", zap.Error(err))
-		if err == model.ErrVersionConflict {
+		if errors.Is(err, model.ErrVersionConflict) {
 			return nil, status.Error(codes.Aborted, "version conflict")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
+		if errors.Is(err, model.ErrTextDataNotFound) {
+			return nil, status.Error(codes.NotFound, "text data not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to update text data")
 	}
@@ -395,6 +417,12 @@ func (s *Server) DeleteTextData(ctx context.Context, req *proto.DeleteRequest) (
 	err = s.textDataDeleteUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("DeleteTextData failed", zap.Error(err))
+		if errors.Is(err, model.ErrTextDataNotFound) {
+			return nil, status.Error(codes.NotFound, "text data not found")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
 		return nil, status.Error(codes.Internal, "failed to delete text data")
 	}
 
@@ -454,7 +482,7 @@ func (s *Server) CreateBinaryData(ctx context.Context, req *proto.BinaryDataRequ
 	err = s.binaryDataCreateUsecase.Execute(ctx, userID, binaryData)
 	if err != nil {
 		s.logger.Error("CreateBinaryData failed", zap.Error(err))
-		if err != nil && err.Error() == "data too large" {
+		if errors.Is(err, model.ErrBinaryDataTooLarge) {
 			return nil, status.Error(codes.InvalidArgument, "data too large (max 10MB)")
 		}
 		return nil, status.Error(codes.Internal, "failed to create binary data")
@@ -474,7 +502,7 @@ func (s *Server) GetBinaryData(ctx context.Context, req *proto.GetRequest) (*pro
 	binaryData, err := s.binaryDataGetUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("GetBinaryData failed", zap.Error(err))
-		if err == model.ErrBinaryDataNotFound {
+		if errors.Is(err, model.ErrBinaryDataNotFound) {
 			return nil, status.Error(codes.NotFound, "binary data not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to get binary data")
@@ -509,11 +537,17 @@ func (s *Server) UpdateBinaryData(ctx context.Context, req *proto.UpdateBinaryDa
 	err = s.binaryDataUpdateUsecase.Execute(ctx, userID, binaryData)
 	if err != nil {
 		s.logger.Error("UpdateBinaryData failed", zap.Error(err))
-		if err == model.ErrVersionConflict {
+		if errors.Is(err, model.ErrVersionConflict) {
 			return nil, status.Error(codes.Aborted, "version conflict")
 		}
-		if err != nil && err.Error() == "data too large" {
+		if errors.Is(err, model.ErrBinaryDataTooLarge) {
 			return nil, status.Error(codes.InvalidArgument, "data too large (max 10MB)")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
+		if errors.Is(err, model.ErrBinaryDataNotFound) {
+			return nil, status.Error(codes.NotFound, "binary data not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to update binary data")
 	}
@@ -532,6 +566,12 @@ func (s *Server) DeleteBinaryData(ctx context.Context, req *proto.DeleteRequest)
 	err = s.binaryDataDeleteUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("DeleteBinaryData failed", zap.Error(err))
+		if errors.Is(err, model.ErrBinaryDataNotFound) {
+			return nil, status.Error(codes.NotFound, "binary data not found")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
 		return nil, status.Error(codes.Internal, "failed to delete binary data")
 	}
 
@@ -629,7 +669,7 @@ func (s *Server) GetCard(ctx context.Context, req *proto.GetRequest) (*proto.Car
 	card, err := s.cardGetUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("GetCard failed", zap.Error(err))
-		if err == model.ErrCardNotFound {
+		if errors.Is(err, model.ErrCardNotFound) {
 			return nil, status.Error(codes.NotFound, "card not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to get card")
@@ -685,8 +725,14 @@ func (s *Server) UpdateCard(ctx context.Context, req *proto.UpdateCardRequest) (
 	err = s.cardUpdateUsecase.Execute(ctx, userID, card)
 	if err != nil {
 		s.logger.Error("UpdateCard failed", zap.Error(err))
-		if err == model.ErrVersionConflict {
+		if errors.Is(err, model.ErrVersionConflict) {
 			return nil, status.Error(codes.Aborted, "version conflict")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
+		if errors.Is(err, model.ErrCardNotFound) {
+			return nil, status.Error(codes.NotFound, "card not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to update card")
 	}
@@ -705,6 +751,12 @@ func (s *Server) DeleteCard(ctx context.Context, req *proto.DeleteRequest) (*emp
 	err = s.cardDeleteUsecase.Execute(ctx, userID, req.Id)
 	if err != nil {
 		s.logger.Error("DeleteCard failed", zap.Error(err))
+		if errors.Is(err, model.ErrCardNotFound) {
+			return nil, status.Error(codes.NotFound, "card not found")
+		}
+		if errors.Is(err, model.ErrForbidden) {
+			return nil, status.Error(codes.PermissionDenied, "access denied")
+		}
 		return nil, status.Error(codes.Internal, "failed to delete card")
 	}
 
