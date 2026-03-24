@@ -10,7 +10,7 @@ import (
 	"github.com/a-blokhin/goph-keeper/api/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/emptypb"
+	protobuf "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -39,6 +39,10 @@ func NewClient(grpcClient proto.KeeperServiceClient, logger *zap.Logger) (*Clien
 }
 
 func (c *Client) loadToken() error {
+	if c.token != "" {
+		return nil
+	}
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return fmt.Errorf("failed to get home directory: %w", err)
@@ -70,31 +74,31 @@ func (c *Client) SaveToken(token string) error {
 }
 
 func (c *Client) Register(ctx context.Context, email, password string) (string, error) {
-	req := &proto.RegisterRequest{
-		Email:    email,
-		Password: password,
-	}
+	req := proto.RegisterRequest_builder{
+		Email:    protobuf.String(email),
+		Password: protobuf.String(password),
+	}.Build()
 
 	resp, err := c.grpcClient.Register(ctx, req)
 	if err != nil {
 		return "", fmt.Errorf("registration failed: %w", err)
 	}
 
-	return resp.Token, nil
+	return resp.GetToken(), nil
 }
 
 func (c *Client) Login(ctx context.Context, email, password string) (string, error) {
-	req := &proto.LoginRequest{
-		Email:    email,
-		Password: password,
-	}
+	req := proto.LoginRequest_builder{
+		Email:    protobuf.String(email),
+		Password: protobuf.String(password),
+	}.Build()
 
 	resp, err := c.grpcClient.Login(ctx, req)
 	if err != nil {
 		return "", fmt.Errorf("login failed: %w", err)
 	}
 
-	return resp.Token, nil
+	return resp.GetToken(), nil
 }
 
 func (c *Client) CreateCredential(ctx context.Context, title, login, password, meta string) (*proto.CredentialResponse, error) {
@@ -102,12 +106,12 @@ func (c *Client) CreateCredential(ctx context.Context, title, login, password, m
 		return nil, err
 	}
 
-	req := &proto.CredentialRequest{
-		Title:    title,
-		Login:    login,
-		Password: password,
-		Meta:     meta,
-	}
+	req := proto.CredentialRequest_builder{
+		Title:    protobuf.String(title),
+		Login:    protobuf.String(login),
+		Password: protobuf.String(password),
+		Meta:     protobuf.String(meta),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.CreateCredential(ctx, req)
@@ -132,14 +136,14 @@ func (c *Client) UpdateCredential(ctx context.Context, id, title, login, passwor
 		return nil, fmt.Errorf("failed to get credential: %w", err)
 	}
 
-	req := &proto.UpdateCredentialRequest{
-		Id:       id,
-		Title:    title,
-		Login:    login,
-		Password: password,
-		Meta:     meta,
-		Version:  cred.Version,
-	}
+	req := proto.UpdateCredentialRequest_builder{
+		Id:       protobuf.String(id),
+		Title:    protobuf.String(title),
+		Login:    protobuf.String(login),
+		Password: protobuf.String(password),
+		Meta:     protobuf.String(meta),
+		Version:  protobuf.Int32(cred.GetVersion()),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.UpdateCredential(ctx, req)
@@ -159,9 +163,9 @@ func (c *Client) DeleteCredential(ctx context.Context, id string) error {
 		return err
 	}
 
-	req := &proto.DeleteRequest{
-		Id: id,
-	}
+	req := proto.DeleteRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	_, err := c.grpcClient.DeleteCredential(ctx, req)
@@ -181,9 +185,9 @@ func (c *Client) GetCredential(ctx context.Context, id string) (*proto.Credentia
 		return nil, err
 	}
 
-	req := &proto.GetRequest{
-		Id: id,
-	}
+	req := proto.GetRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.GetCredential(ctx, req)
@@ -204,7 +208,7 @@ func (c *Client) ListCredentials(ctx context.Context) ([]*proto.CredentialRespon
 		return nil, err
 	}
 
-	req := &emptypb.Empty{}
+	req := proto.ListCredentialsRequest_builder{}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.ListCredentials(ctx, req)
@@ -214,7 +218,7 @@ func (c *Client) ListCredentials(ctx context.Context) ([]*proto.CredentialRespon
 		return c.localStorage.GetCredentials(), nil
 	}
 
-	return resp.Credentials, nil
+	return resp.GetCredentials(), nil
 }
 
 func (c *Client) CreateTextData(ctx context.Context, title, data, meta string) (*proto.TextDataResponse, error) {
@@ -222,11 +226,11 @@ func (c *Client) CreateTextData(ctx context.Context, title, data, meta string) (
 		return nil, err
 	}
 
-	req := &proto.TextDataRequest{
-		Title: title,
-		Data:  data,
-		Meta:  meta,
-	}
+	req := proto.TextDataRequest_builder{
+		Title: protobuf.String(title),
+		Data:  protobuf.String(data),
+		Meta:  protobuf.String(meta),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.CreateTextData(ctx, req)
@@ -251,13 +255,13 @@ func (c *Client) UpdateTextData(ctx context.Context, id, title, data, meta strin
 		return nil, fmt.Errorf("failed to get text data: %w", err)
 	}
 
-	req := &proto.UpdateTextDataRequest{
-		Id:      id,
-		Title:   title,
-		Data:    data,
-		Meta:    meta,
-		Version: text.Version,
-	}
+	req := proto.UpdateTextDataRequest_builder{
+		Id:      protobuf.String(id),
+		Title:   protobuf.String(title),
+		Data:    protobuf.String(data),
+		Meta:    protobuf.String(meta),
+		Version: protobuf.Int32(text.GetVersion()),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.UpdateTextData(ctx, req)
@@ -277,9 +281,9 @@ func (c *Client) DeleteTextData(ctx context.Context, id string) error {
 		return err
 	}
 
-	req := &proto.DeleteRequest{
-		Id: id,
-	}
+	req := proto.DeleteRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	_, err := c.grpcClient.DeleteTextData(ctx, req)
@@ -299,9 +303,9 @@ func (c *Client) GetTextData(ctx context.Context, id string) (*proto.TextDataRes
 		return nil, err
 	}
 
-	req := &proto.GetRequest{
-		Id: id,
-	}
+	req := proto.GetRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.GetTextData(ctx, req)
@@ -322,7 +326,7 @@ func (c *Client) ListTextData(ctx context.Context) ([]*proto.TextDataResponse, e
 		return nil, err
 	}
 
-	req := &emptypb.Empty{}
+	req := proto.ListTextDataRequest_builder{}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.ListTextData(ctx, req)
@@ -332,7 +336,7 @@ func (c *Client) ListTextData(ctx context.Context) ([]*proto.TextDataResponse, e
 		return c.localStorage.GetTextData(), nil
 	}
 
-	return resp.TextData, nil
+	return resp.GetTextData(), nil
 }
 
 func (c *Client) CreateBinaryData(ctx context.Context, title string, data []byte, meta string) (*proto.BinaryDataResponse, error) {
@@ -344,11 +348,11 @@ func (c *Client) CreateBinaryData(ctx context.Context, title string, data []byte
 		return nil, fmt.Errorf("data too large (max 10MB)")
 	}
 
-	req := &proto.BinaryDataRequest{
-		Title: title,
+	req := proto.BinaryDataRequest_builder{
+		Title: protobuf.String(title),
 		Data:  data,
-		Meta:  meta,
-	}
+		Meta:  protobuf.String(meta),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.CreateBinaryData(ctx, req)
@@ -377,13 +381,13 @@ func (c *Client) UpdateBinaryData(ctx context.Context, id, title string, data []
 		return nil, fmt.Errorf("failed to get binary data: %w", err)
 	}
 
-	req := &proto.UpdateBinaryDataRequest{
-		Id:      id,
-		Title:   title,
+	req := proto.UpdateBinaryDataRequest_builder{
+		Id:      protobuf.String(id),
+		Title:   protobuf.String(title),
 		Data:    data,
-		Meta:    meta,
-		Version: binary.Version,
-	}
+		Meta:    protobuf.String(meta),
+		Version: protobuf.Int32(binary.GetVersion()),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.UpdateBinaryData(ctx, req)
@@ -403,9 +407,9 @@ func (c *Client) DeleteBinaryData(ctx context.Context, id string) error {
 		return err
 	}
 
-	req := &proto.DeleteRequest{
-		Id: id,
-	}
+	req := proto.DeleteRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	_, err := c.grpcClient.DeleteBinaryData(ctx, req)
@@ -425,9 +429,9 @@ func (c *Client) GetBinaryData(ctx context.Context, id string) (*proto.BinaryDat
 		return nil, err
 	}
 
-	req := &proto.GetRequest{
-		Id: id,
-	}
+	req := proto.GetRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.GetBinaryData(ctx, req)
@@ -448,7 +452,7 @@ func (c *Client) ListBinaryData(ctx context.Context) ([]*proto.BinaryDataRespons
 		return nil, err
 	}
 
-	req := &emptypb.Empty{}
+	req := proto.ListBinaryDataRequest_builder{}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.ListBinaryData(ctx, req)
@@ -458,7 +462,7 @@ func (c *Client) ListBinaryData(ctx context.Context) ([]*proto.BinaryDataRespons
 		return c.localStorage.GetBinaryData(), nil
 	}
 
-	return resp.BinaryData, nil
+	return resp.GetBinaryData(), nil
 }
 
 func (c *Client) CreateCard(ctx context.Context, title, cardNumber, cardHolder, expiry, cvv, meta string) (*proto.CardResponse, error) {
@@ -466,14 +470,14 @@ func (c *Client) CreateCard(ctx context.Context, title, cardNumber, cardHolder, 
 		return nil, err
 	}
 
-	req := &proto.CardRequest{
-		Title:      title,
-		CardNumber: cardNumber,
-		CardHolder: cardHolder,
-		Expiry:     expiry,
-		Cvv:        cvv,
-		Meta:       meta,
-	}
+	req := proto.CardRequest_builder{
+		Title:      protobuf.String(title),
+		CardNumber: protobuf.String(cardNumber),
+		CardHolder: protobuf.String(cardHolder),
+		Expiry:     protobuf.String(expiry),
+		Cvv:        protobuf.String(cvv),
+		Meta:       protobuf.String(meta),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.CreateCard(ctx, req)
@@ -498,16 +502,16 @@ func (c *Client) UpdateCard(ctx context.Context, id, title, cardNumber, cardHold
 		return nil, fmt.Errorf("failed to get card: %w", err)
 	}
 
-	req := &proto.UpdateCardRequest{
-		Id:         id,
-		Title:      title,
-		CardNumber: cardNumber,
-		CardHolder: cardHolder,
-		Expiry:     expiry,
-		Cvv:        cvv,
-		Meta:       meta,
-		Version:    card.Version,
-	}
+	req := proto.UpdateCardRequest_builder{
+		Id:         protobuf.String(id),
+		Title:      protobuf.String(title),
+		CardNumber: protobuf.String(cardNumber),
+		CardHolder: protobuf.String(cardHolder),
+		Expiry:     protobuf.String(expiry),
+		Cvv:        protobuf.String(cvv),
+		Meta:       protobuf.String(meta),
+		Version:    protobuf.Int32(card.GetVersion()),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.UpdateCard(ctx, req)
@@ -527,9 +531,9 @@ func (c *Client) DeleteCard(ctx context.Context, id string) error {
 		return err
 	}
 
-	req := &proto.DeleteRequest{
-		Id: id,
-	}
+	req := proto.DeleteRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	_, err := c.grpcClient.DeleteCard(ctx, req)
@@ -549,9 +553,9 @@ func (c *Client) GetCard(ctx context.Context, id string) (*proto.CardResponse, e
 		return nil, err
 	}
 
-	req := &proto.GetRequest{
-		Id: id,
-	}
+	req := proto.GetRequest_builder{
+		Id: protobuf.String(id),
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.GetCard(ctx, req)
@@ -572,7 +576,7 @@ func (c *Client) ListCards(ctx context.Context) ([]*proto.CardResponse, error) {
 		return nil, err
 	}
 
-	req := &emptypb.Empty{}
+	req := proto.ListCardsRequest_builder{}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.ListCards(ctx, req)
@@ -582,7 +586,7 @@ func (c *Client) ListCards(ctx context.Context) ([]*proto.CardResponse, error) {
 		return c.localStorage.GetCards(), nil
 	}
 
-	return resp.Cards, nil
+	return resp.GetCards(), nil
 }
 
 func (c *Client) Sync(ctx context.Context) (*proto.SyncResponse, error) {
@@ -590,9 +594,9 @@ func (c *Client) Sync(ctx context.Context) (*proto.SyncResponse, error) {
 		return nil, err
 	}
 
-	req := &proto.SyncRequest{
+	req := proto.SyncRequest_builder{
 		LastSync: timestamppb.New(time.Time{}),
-	}
+	}.Build()
 
 	ctx = c.withAuth(ctx)
 	resp, err := c.grpcClient.Sync(ctx, req)

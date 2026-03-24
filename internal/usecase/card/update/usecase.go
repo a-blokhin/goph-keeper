@@ -5,18 +5,21 @@ import (
 
 	"github.com/a-blokhin/goph-keeper/internal/model"
 	"github.com/a-blokhin/goph-keeper/internal/repository"
+	"github.com/a-blokhin/goph-keeper/internal/service/encryption"
 	"go.uber.org/zap"
 )
 
 type updateCardUsecase struct {
-	cardRepo repository.CardRepository
-	logger   *zap.Logger
+	cardRepo          repository.CardRepository
+	encryptionService encryption.EncryptionService
+	logger            *zap.Logger
 }
 
-func New(cardRepo repository.CardRepository, logger *zap.Logger) UpdateCardUsecase {
+func New(cardRepo repository.CardRepository, encryptionService encryption.EncryptionService, logger *zap.Logger) UpdateCardUsecase {
 	return &updateCardUsecase{
-		cardRepo: cardRepo,
-		logger:   logger,
+		cardRepo:          cardRepo,
+		encryptionService: encryptionService,
+		logger:            logger,
 	}
 }
 
@@ -33,6 +36,11 @@ func (u *updateCardUsecase) Execute(ctx context.Context, userID string, card *mo
 
 	if existing.Version != card.Version {
 		return model.ErrVersionConflict
+	}
+
+	if err := u.encryptionService.EncryptCardData(card); err != nil {
+		u.logger.Error("failed to encrypt card data", zap.Error(err))
+		return err
 	}
 
 	card.UserID = userID

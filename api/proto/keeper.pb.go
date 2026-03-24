@@ -7,14 +7,12 @@
 package proto
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	_ "google.golang.org/protobuf/types/gofeaturespb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	unsafe "unsafe"
 )
 
 const (
@@ -25,11 +23,13 @@ const (
 )
 
 type RegisterRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Email       *string                `protobuf:"bytes,1,opt,name=email"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,2,opt,name=password"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RegisterRequest) Reset() {
@@ -57,30 +57,89 @@ func (x *RegisterRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RegisterRequest.ProtoReflect.Descriptor instead.
-func (*RegisterRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *RegisterRequest) GetEmail() string {
 	if x != nil {
-		return x.Email
+		if x.xxx_hidden_Email != nil {
+			return *x.xxx_hidden_Email
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *RegisterRequest) GetPassword() string {
 	if x != nil {
-		return x.Password
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *RegisterRequest) SetEmail(v string) {
+	x.xxx_hidden_Email = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *RegisterRequest) SetPassword(v string) {
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *RegisterRequest) HasEmail() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RegisterRequest) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *RegisterRequest) ClearEmail() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Email = nil
+}
+
+func (x *RegisterRequest) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Password = nil
+}
+
+type RegisterRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Email    *string
+	Password *string
+}
+
+func (b0 RegisterRequest_builder) Build() *RegisterRequest {
+	m0 := &RegisterRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Email != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Email = b.Email
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Password = b.Password
+	}
+	return m0
+}
+
 type RegisterResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Token       *string                `protobuf:"bytes,1,opt,name=token"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RegisterResponse) Reset() {
@@ -108,24 +167,58 @@ func (x *RegisterResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RegisterResponse.ProtoReflect.Descriptor instead.
-func (*RegisterResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *RegisterResponse) GetToken() string {
 	if x != nil {
-		return x.Token
+		if x.xxx_hidden_Token != nil {
+			return *x.xxx_hidden_Token
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *RegisterResponse) SetToken(v string) {
+	x.xxx_hidden_Token = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *RegisterResponse) HasToken() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *RegisterResponse) ClearToken() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Token = nil
+}
+
+type RegisterResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Token *string
+}
+
+func (b0 RegisterResponse_builder) Build() *RegisterResponse {
+	m0 := &RegisterResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Token != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Token = b.Token
+	}
+	return m0
+}
+
 type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Email       *string                `protobuf:"bytes,1,opt,name=email"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,2,opt,name=password"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *LoginRequest) Reset() {
@@ -153,30 +246,89 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
-func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *LoginRequest) GetEmail() string {
 	if x != nil {
-		return x.Email
+		if x.xxx_hidden_Email != nil {
+			return *x.xxx_hidden_Email
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *LoginRequest) GetPassword() string {
 	if x != nil {
-		return x.Password
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *LoginRequest) SetEmail(v string) {
+	x.xxx_hidden_Email = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 2)
+}
+
+func (x *LoginRequest) SetPassword(v string) {
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 2)
+}
+
+func (x *LoginRequest) HasEmail() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *LoginRequest) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *LoginRequest) ClearEmail() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Email = nil
+}
+
+func (x *LoginRequest) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Password = nil
+}
+
+type LoginRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Email    *string
+	Password *string
+}
+
+func (b0 LoginRequest_builder) Build() *LoginRequest {
+	m0 := &LoginRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Email != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 2)
+		x.xxx_hidden_Email = b.Email
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 2)
+		x.xxx_hidden_Password = b.Password
+	}
+	return m0
+}
+
 type LoginResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Token         string                 `protobuf:"bytes,1,opt,name=token,proto3" json:"token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Token       *string                `protobuf:"bytes,1,opt,name=token"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *LoginResponse) Reset() {
@@ -204,26 +356,60 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
-func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *LoginResponse) GetToken() string {
 	if x != nil {
-		return x.Token
+		if x.xxx_hidden_Token != nil {
+			return *x.xxx_hidden_Token
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *LoginResponse) SetToken(v string) {
+	x.xxx_hidden_Token = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *LoginResponse) HasToken() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *LoginResponse) ClearToken() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Token = nil
+}
+
+type LoginResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Token *string
+}
+
+func (b0 LoginResponse_builder) Build() *LoginResponse {
+	m0 := &LoginResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Token != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Token = b.Token
+	}
+	return m0
+}
+
 type CredentialRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Login         string                 `protobuf:"bytes,2,opt,name=login,proto3" json:"login,omitempty"`
-	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
-	Meta          string                 `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,1,opt,name=title"`
+	xxx_hidden_Login       *string                `protobuf:"bytes,2,opt,name=login"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,3,opt,name=password"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,4,opt,name=meta"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CredentialRequest) Reset() {
@@ -251,49 +437,158 @@ func (x *CredentialRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CredentialRequest.ProtoReflect.Descriptor instead.
-func (*CredentialRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *CredentialRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialRequest) GetLogin() string {
 	if x != nil {
-		return x.Login
+		if x.xxx_hidden_Login != nil {
+			return *x.xxx_hidden_Login
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialRequest) GetPassword() string {
 	if x != nil {
-		return x.Password
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *CredentialRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 4)
+}
+
+func (x *CredentialRequest) SetLogin(v string) {
+	x.xxx_hidden_Login = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 4)
+}
+
+func (x *CredentialRequest) SetPassword(v string) {
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 4)
+}
+
+func (x *CredentialRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 4)
+}
+
+func (x *CredentialRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *CredentialRequest) HasLogin() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *CredentialRequest) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *CredentialRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *CredentialRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *CredentialRequest) ClearLogin() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Login = nil
+}
+
+func (x *CredentialRequest) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Password = nil
+}
+
+func (x *CredentialRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Meta = nil
+}
+
+type CredentialRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Title    *string
+	Login    *string
+	Password *string
+	Meta     *string
+}
+
+func (b0 CredentialRequest_builder) Build() *CredentialRequest {
+	m0 := &CredentialRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 4)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Login != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 4)
+		x.xxx_hidden_Login = b.Login
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 4)
+		x.xxx_hidden_Password = b.Password
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 4)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	return m0
+}
+
 type UpdateCredentialRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Login         string                 `protobuf:"bytes,3,opt,name=login,proto3" json:"login,omitempty"`
-	Password      string                 `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
-	Meta          string                 `protobuf:"bytes,5,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Login       *string                `protobuf:"bytes,3,opt,name=login"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,4,opt,name=password"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,5,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,6,opt,name=version"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpdateCredentialRequest) Reset() {
@@ -321,65 +616,221 @@ func (x *UpdateCredentialRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateCredentialRequest.ProtoReflect.Descriptor instead.
-func (*UpdateCredentialRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *UpdateCredentialRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCredentialRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCredentialRequest) GetLogin() string {
 	if x != nil {
-		return x.Login
+		if x.xxx_hidden_Login != nil {
+			return *x.xxx_hidden_Login
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCredentialRequest) GetPassword() string {
 	if x != nil {
-		return x.Password
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCredentialRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCredentialRequest) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
+func (x *UpdateCredentialRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+}
+
+func (x *UpdateCredentialRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+}
+
+func (x *UpdateCredentialRequest) SetLogin(v string) {
+	x.xxx_hidden_Login = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+}
+
+func (x *UpdateCredentialRequest) SetPassword(v string) {
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
+}
+
+func (x *UpdateCredentialRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *UpdateCredentialRequest) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+}
+
+func (x *UpdateCredentialRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UpdateCredentialRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UpdateCredentialRequest) HasLogin() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *UpdateCredentialRequest) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *UpdateCredentialRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *UpdateCredentialRequest) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *UpdateCredentialRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *UpdateCredentialRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *UpdateCredentialRequest) ClearLogin() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Login = nil
+}
+
+func (x *UpdateCredentialRequest) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Password = nil
+}
+
+func (x *UpdateCredentialRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *UpdateCredentialRequest) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Version = 0
+}
+
+type UpdateCredentialRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id       *string
+	Title    *string
+	Login    *string
+	Password *string
+	Meta     *string
+	Version  *int32
+}
+
+func (b0 UpdateCredentialRequest_builder) Build() *UpdateCredentialRequest {
+	m0 := &UpdateCredentialRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Login != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		x.xxx_hidden_Login = b.Login
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		x.xxx_hidden_Password = b.Password
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_Version = *b.Version
+	}
+	return m0
+}
+
 type CredentialResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Login         string                 `protobuf:"bytes,3,opt,name=login,proto3" json:"login,omitempty"`
-	Password      string                 `protobuf:"bytes,4,opt,name=password,proto3" json:"password,omitempty"`
-	Meta          string                 `protobuf:"bytes,5,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Login       *string                `protobuf:"bytes,3,opt,name=login"`
+	xxx_hidden_Password    *string                `protobuf:"bytes,4,opt,name=password"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,5,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,6,opt,name=version"`
+	xxx_hidden_CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt"`
+	xxx_hidden_UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CredentialResponse) Reset() {
@@ -407,72 +858,260 @@ func (x *CredentialResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CredentialResponse.ProtoReflect.Descriptor instead.
-func (*CredentialResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *CredentialResponse) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialResponse) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialResponse) GetLogin() string {
 	if x != nil {
-		return x.Login
+		if x.xxx_hidden_Login != nil {
+			return *x.xxx_hidden_Login
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialResponse) GetPassword() string {
 	if x != nil {
-		return x.Password
+		if x.xxx_hidden_Password != nil {
+			return *x.xxx_hidden_Password
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialResponse) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CredentialResponse) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
 func (x *CredentialResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreatedAt
+		return x.xxx_hidden_CreatedAt
 	}
 	return nil
 }
 
 func (x *CredentialResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.UpdatedAt
+		return x.xxx_hidden_UpdatedAt
 	}
 	return nil
 }
 
+func (x *CredentialResponse) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+}
+
+func (x *CredentialResponse) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+}
+
+func (x *CredentialResponse) SetLogin(v string) {
+	x.xxx_hidden_Login = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
+}
+
+func (x *CredentialResponse) SetPassword(v string) {
+	x.xxx_hidden_Password = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+}
+
+func (x *CredentialResponse) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+}
+
+func (x *CredentialResponse) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+}
+
+func (x *CredentialResponse) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CreatedAt = v
+}
+
+func (x *CredentialResponse) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_UpdatedAt = v
+}
+
+func (x *CredentialResponse) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *CredentialResponse) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *CredentialResponse) HasLogin() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *CredentialResponse) HasPassword() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *CredentialResponse) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *CredentialResponse) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *CredentialResponse) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CreatedAt != nil
+}
+
+func (x *CredentialResponse) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_UpdatedAt != nil
+}
+
+func (x *CredentialResponse) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *CredentialResponse) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *CredentialResponse) ClearLogin() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Login = nil
+}
+
+func (x *CredentialResponse) ClearPassword() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Password = nil
+}
+
+func (x *CredentialResponse) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *CredentialResponse) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Version = 0
+}
+
+func (x *CredentialResponse) ClearCreatedAt() {
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *CredentialResponse) ClearUpdatedAt() {
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type CredentialResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id        *string
+	Title     *string
+	Login     *string
+	Password  *string
+	Meta      *string
+	Version   *int32
+	CreatedAt *timestamppb.Timestamp
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 CredentialResponse_builder) Build() *CredentialResponse {
+	m0 := &CredentialResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Login != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		x.xxx_hidden_Login = b.Login
+	}
+	if b.Password != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		x.xxx_hidden_Password = b.Password
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		x.xxx_hidden_Version = *b.Version
+	}
+	x.xxx_hidden_CreatedAt = b.CreatedAt
+	x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 type CredentialsListResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Credentials   []*CredentialResponse  `protobuf:"bytes,1,rep,name=credentials,proto3" json:"credentials,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Credentials *[]*CredentialResponse `protobuf:"bytes,1,rep,name=credentials"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CredentialsListResponse) Reset() {
@@ -500,25 +1139,42 @@ func (x *CredentialsListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CredentialsListResponse.ProtoReflect.Descriptor instead.
-func (*CredentialsListResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *CredentialsListResponse) GetCredentials() []*CredentialResponse {
 	if x != nil {
-		return x.Credentials
+		if x.xxx_hidden_Credentials != nil {
+			return *x.xxx_hidden_Credentials
+		}
 	}
 	return nil
 }
 
+func (x *CredentialsListResponse) SetCredentials(v []*CredentialResponse) {
+	x.xxx_hidden_Credentials = &v
+}
+
+type CredentialsListResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Credentials []*CredentialResponse
+}
+
+func (b0 CredentialsListResponse_builder) Build() *CredentialsListResponse {
+	m0 := &CredentialsListResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Credentials = &b.Credentials
+	return m0
+}
+
 type TextDataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Data          string                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	Meta          string                 `protobuf:"bytes,3,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,1,opt,name=title"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,2,opt,name=data"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,3,opt,name=meta"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *TextDataRequest) Reset() {
@@ -546,41 +1202,125 @@ func (x *TextDataRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TextDataRequest.ProtoReflect.Descriptor instead.
-func (*TextDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{8}
-}
-
 func (x *TextDataRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextDataRequest) GetData() string {
 	if x != nil {
-		return x.Data
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextDataRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *TextDataRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *TextDataRequest) SetData(v string) {
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *TextDataRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *TextDataRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TextDataRequest) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *TextDataRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *TextDataRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *TextDataRequest) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *TextDataRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Meta = nil
+}
+
+type TextDataRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Title *string
+	Data  *string
+	Meta  *string
+}
+
+func (b0 TextDataRequest_builder) Build() *TextDataRequest {
+	m0 := &TextDataRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	return m0
+}
+
 type UpdateTextDataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Data          string                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	Meta          string                 `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,3,opt,name=data"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,4,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,5,opt,name=version"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpdateTextDataRequest) Reset() {
@@ -608,57 +1348,188 @@ func (x *UpdateTextDataRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateTextDataRequest.ProtoReflect.Descriptor instead.
-func (*UpdateTextDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{9}
-}
-
 func (x *UpdateTextDataRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateTextDataRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateTextDataRequest) GetData() string {
 	if x != nil {
-		return x.Data
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateTextDataRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateTextDataRequest) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
+func (x *UpdateTextDataRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *UpdateTextDataRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *UpdateTextDataRequest) SetData(v string) {
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *UpdateTextDataRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *UpdateTextDataRequest) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+}
+
+func (x *UpdateTextDataRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UpdateTextDataRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UpdateTextDataRequest) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *UpdateTextDataRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *UpdateTextDataRequest) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *UpdateTextDataRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *UpdateTextDataRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *UpdateTextDataRequest) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *UpdateTextDataRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *UpdateTextDataRequest) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Version = 0
+}
+
+type UpdateTextDataRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id      *string
+	Title   *string
+	Data    *string
+	Meta    *string
+	Version *int32
+}
+
+func (b0 UpdateTextDataRequest_builder) Build() *UpdateTextDataRequest {
+	m0 := &UpdateTextDataRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_Version = *b.Version
+	}
+	return m0
+}
+
 type TextDataResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Data          string                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	Meta          string                 `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Data        *string                `protobuf:"bytes,3,opt,name=data"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,4,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,5,opt,name=version"`
+	xxx_hidden_CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt"`
+	xxx_hidden_UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *TextDataResponse) Reset() {
@@ -686,65 +1557,228 @@ func (x *TextDataResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TextDataResponse.ProtoReflect.Descriptor instead.
-func (*TextDataResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{10}
-}
-
 func (x *TextDataResponse) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextDataResponse) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextDataResponse) GetData() string {
 	if x != nil {
-		return x.Data
+		if x.xxx_hidden_Data != nil {
+			return *x.xxx_hidden_Data
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextDataResponse) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *TextDataResponse) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
 func (x *TextDataResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreatedAt
+		return x.xxx_hidden_CreatedAt
 	}
 	return nil
 }
 
 func (x *TextDataResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.UpdatedAt
+		return x.xxx_hidden_UpdatedAt
 	}
 	return nil
 }
 
+func (x *TextDataResponse) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+}
+
+func (x *TextDataResponse) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+}
+
+func (x *TextDataResponse) SetData(v string) {
+	x.xxx_hidden_Data = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+}
+
+func (x *TextDataResponse) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
+}
+
+func (x *TextDataResponse) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
+}
+
+func (x *TextDataResponse) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CreatedAt = v
+}
+
+func (x *TextDataResponse) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_UpdatedAt = v
+}
+
+func (x *TextDataResponse) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *TextDataResponse) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *TextDataResponse) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *TextDataResponse) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *TextDataResponse) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *TextDataResponse) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CreatedAt != nil
+}
+
+func (x *TextDataResponse) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_UpdatedAt != nil
+}
+
+func (x *TextDataResponse) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *TextDataResponse) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *TextDataResponse) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *TextDataResponse) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *TextDataResponse) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Version = 0
+}
+
+func (x *TextDataResponse) ClearCreatedAt() {
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *TextDataResponse) ClearUpdatedAt() {
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type TextDataResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id        *string
+	Title     *string
+	Data      *string
+	Meta      *string
+	Version   *int32
+	CreatedAt *timestamppb.Timestamp
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 TextDataResponse_builder) Build() *TextDataResponse {
+	m0 := &TextDataResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
+		x.xxx_hidden_Version = *b.Version
+	}
+	x.xxx_hidden_CreatedAt = b.CreatedAt
+	x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 type TextDataListResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TextData      []*TextDataResponse    `protobuf:"bytes,1,rep,name=text_data,json=textData,proto3" json:"text_data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_TextData *[]*TextDataResponse   `protobuf:"bytes,1,rep,name=text_data,json=textData"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *TextDataListResponse) Reset() {
@@ -772,25 +1806,42 @@ func (x *TextDataListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TextDataListResponse.ProtoReflect.Descriptor instead.
-func (*TextDataListResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{11}
-}
-
 func (x *TextDataListResponse) GetTextData() []*TextDataResponse {
 	if x != nil {
-		return x.TextData
+		if x.xxx_hidden_TextData != nil {
+			return *x.xxx_hidden_TextData
+		}
 	}
 	return nil
 }
 
+func (x *TextDataListResponse) SetTextData(v []*TextDataResponse) {
+	x.xxx_hidden_TextData = &v
+}
+
+type TextDataListResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	TextData []*TextDataResponse
+}
+
+func (b0 TextDataListResponse_builder) Build() *TextDataListResponse {
+	m0 := &TextDataListResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_TextData = &b.TextData
+	return m0
+}
+
 type BinaryDataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Data          []byte                 `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	Meta          string                 `protobuf:"bytes,3,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,1,opt,name=title"`
+	xxx_hidden_Data        []byte                 `protobuf:"bytes,2,opt,name=data"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,3,opt,name=meta"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *BinaryDataRequest) Reset() {
@@ -818,41 +1869,125 @@ func (x *BinaryDataRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BinaryDataRequest.ProtoReflect.Descriptor instead.
-func (*BinaryDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{12}
-}
-
 func (x *BinaryDataRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BinaryDataRequest) GetData() []byte {
 	if x != nil {
-		return x.Data
+		return x.xxx_hidden_Data
 	}
 	return nil
 }
 
 func (x *BinaryDataRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *BinaryDataRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 3)
+}
+
+func (x *BinaryDataRequest) SetData(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 3)
+}
+
+func (x *BinaryDataRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 3)
+}
+
+func (x *BinaryDataRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *BinaryDataRequest) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *BinaryDataRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *BinaryDataRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *BinaryDataRequest) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *BinaryDataRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Meta = nil
+}
+
+type BinaryDataRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Title *string
+	Data  []byte
+	Meta  *string
+}
+
+func (b0 BinaryDataRequest_builder) Build() *BinaryDataRequest {
+	m0 := &BinaryDataRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 3)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 3)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 3)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	return m0
+}
+
 type UpdateBinaryDataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Data          []byte                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	Meta          string                 `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Data        []byte                 `protobuf:"bytes,3,opt,name=data"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,4,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,5,opt,name=version"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpdateBinaryDataRequest) Reset() {
@@ -880,57 +2015,188 @@ func (x *UpdateBinaryDataRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateBinaryDataRequest.ProtoReflect.Descriptor instead.
-func (*UpdateBinaryDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{13}
-}
-
 func (x *UpdateBinaryDataRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateBinaryDataRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateBinaryDataRequest) GetData() []byte {
 	if x != nil {
-		return x.Data
+		return x.xxx_hidden_Data
 	}
 	return nil
 }
 
 func (x *UpdateBinaryDataRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateBinaryDataRequest) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
+func (x *UpdateBinaryDataRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 5)
+}
+
+func (x *UpdateBinaryDataRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 5)
+}
+
+func (x *UpdateBinaryDataRequest) SetData(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 5)
+}
+
+func (x *UpdateBinaryDataRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 5)
+}
+
+func (x *UpdateBinaryDataRequest) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 5)
+}
+
+func (x *UpdateBinaryDataRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UpdateBinaryDataRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UpdateBinaryDataRequest) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *UpdateBinaryDataRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *UpdateBinaryDataRequest) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *UpdateBinaryDataRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *UpdateBinaryDataRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *UpdateBinaryDataRequest) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *UpdateBinaryDataRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *UpdateBinaryDataRequest) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Version = 0
+}
+
+type UpdateBinaryDataRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id      *string
+	Title   *string
+	Data    []byte
+	Meta    *string
+	Version *int32
+}
+
+func (b0 UpdateBinaryDataRequest_builder) Build() *UpdateBinaryDataRequest {
+	m0 := &UpdateBinaryDataRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 5)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 5)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 5)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 5)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 5)
+		x.xxx_hidden_Version = *b.Version
+	}
+	return m0
+}
+
 type BinaryDataResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Data          []byte                 `protobuf:"bytes,3,opt,name=data,proto3" json:"data,omitempty"`
-	Meta          string                 `protobuf:"bytes,4,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_Data        []byte                 `protobuf:"bytes,3,opt,name=data"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,4,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,5,opt,name=version"`
+	xxx_hidden_CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt"`
+	xxx_hidden_UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *BinaryDataResponse) Reset() {
@@ -958,65 +2224,228 @@ func (x *BinaryDataResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BinaryDataResponse.ProtoReflect.Descriptor instead.
-func (*BinaryDataResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{14}
-}
-
 func (x *BinaryDataResponse) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BinaryDataResponse) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BinaryDataResponse) GetData() []byte {
 	if x != nil {
-		return x.Data
+		return x.xxx_hidden_Data
 	}
 	return nil
 }
 
 func (x *BinaryDataResponse) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *BinaryDataResponse) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
 func (x *BinaryDataResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreatedAt
+		return x.xxx_hidden_CreatedAt
 	}
 	return nil
 }
 
 func (x *BinaryDataResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.UpdatedAt
+		return x.xxx_hidden_UpdatedAt
 	}
 	return nil
 }
 
+func (x *BinaryDataResponse) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 7)
+}
+
+func (x *BinaryDataResponse) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 7)
+}
+
+func (x *BinaryDataResponse) SetData(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Data = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 7)
+}
+
+func (x *BinaryDataResponse) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 7)
+}
+
+func (x *BinaryDataResponse) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 7)
+}
+
+func (x *BinaryDataResponse) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CreatedAt = v
+}
+
+func (x *BinaryDataResponse) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_UpdatedAt = v
+}
+
+func (x *BinaryDataResponse) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *BinaryDataResponse) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *BinaryDataResponse) HasData() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *BinaryDataResponse) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *BinaryDataResponse) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *BinaryDataResponse) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CreatedAt != nil
+}
+
+func (x *BinaryDataResponse) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_UpdatedAt != nil
+}
+
+func (x *BinaryDataResponse) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *BinaryDataResponse) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *BinaryDataResponse) ClearData() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_Data = nil
+}
+
+func (x *BinaryDataResponse) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *BinaryDataResponse) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Version = 0
+}
+
+func (x *BinaryDataResponse) ClearCreatedAt() {
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *BinaryDataResponse) ClearUpdatedAt() {
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type BinaryDataResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id        *string
+	Title     *string
+	Data      []byte
+	Meta      *string
+	Version   *int32
+	CreatedAt *timestamppb.Timestamp
+	UpdatedAt *timestamppb.Timestamp
+}
+
+func (b0 BinaryDataResponse_builder) Build() *BinaryDataResponse {
+	m0 := &BinaryDataResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 7)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 7)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.Data != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 7)
+		x.xxx_hidden_Data = b.Data
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 7)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 7)
+		x.xxx_hidden_Version = *b.Version
+	}
+	x.xxx_hidden_CreatedAt = b.CreatedAt
+	x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 type BinaryDataListResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BinaryData    []*BinaryDataResponse  `protobuf:"bytes,1,rep,name=binary_data,json=binaryData,proto3" json:"binary_data,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_BinaryData *[]*BinaryDataResponse `protobuf:"bytes,1,rep,name=binary_data,json=binaryData"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *BinaryDataListResponse) Reset() {
@@ -1044,28 +2473,45 @@ func (x *BinaryDataListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BinaryDataListResponse.ProtoReflect.Descriptor instead.
-func (*BinaryDataListResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{15}
-}
-
 func (x *BinaryDataListResponse) GetBinaryData() []*BinaryDataResponse {
 	if x != nil {
-		return x.BinaryData
+		if x.xxx_hidden_BinaryData != nil {
+			return *x.xxx_hidden_BinaryData
+		}
 	}
 	return nil
 }
 
+func (x *BinaryDataListResponse) SetBinaryData(v []*BinaryDataResponse) {
+	x.xxx_hidden_BinaryData = &v
+}
+
+type BinaryDataListResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	BinaryData []*BinaryDataResponse
+}
+
+func (b0 BinaryDataListResponse_builder) Build() *BinaryDataListResponse {
+	m0 := &BinaryDataListResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_BinaryData = &b.BinaryData
+	return m0
+}
+
 type CardRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	CardNumber    string                 `protobuf:"bytes,2,opt,name=card_number,json=cardNumber,proto3" json:"card_number,omitempty"`
-	CardHolder    string                 `protobuf:"bytes,3,opt,name=card_holder,json=cardHolder,proto3" json:"card_holder,omitempty"`
-	Expiry        string                 `protobuf:"bytes,4,opt,name=expiry,proto3" json:"expiry,omitempty"`
-	Cvv           string                 `protobuf:"bytes,5,opt,name=cvv,proto3" json:"cvv,omitempty"`
-	Meta          string                 `protobuf:"bytes,6,opt,name=meta,proto3" json:"meta,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,1,opt,name=title"`
+	xxx_hidden_CardNumber  *string                `protobuf:"bytes,2,opt,name=card_number,json=cardNumber"`
+	xxx_hidden_CardHolder  *string                `protobuf:"bytes,3,opt,name=card_holder,json=cardHolder"`
+	xxx_hidden_Expiry      *string                `protobuf:"bytes,4,opt,name=expiry"`
+	xxx_hidden_Cvv         *string                `protobuf:"bytes,5,opt,name=cvv"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,6,opt,name=meta"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CardRequest) Reset() {
@@ -1093,65 +2539,224 @@ func (x *CardRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CardRequest.ProtoReflect.Descriptor instead.
-func (*CardRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{16}
-}
-
 func (x *CardRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardRequest) GetCardNumber() string {
 	if x != nil {
-		return x.CardNumber
+		if x.xxx_hidden_CardNumber != nil {
+			return *x.xxx_hidden_CardNumber
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardRequest) GetCardHolder() string {
 	if x != nil {
-		return x.CardHolder
+		if x.xxx_hidden_CardHolder != nil {
+			return *x.xxx_hidden_CardHolder
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardRequest) GetExpiry() string {
 	if x != nil {
-		return x.Expiry
+		if x.xxx_hidden_Expiry != nil {
+			return *x.xxx_hidden_Expiry
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardRequest) GetCvv() string {
 	if x != nil {
-		return x.Cvv
+		if x.xxx_hidden_Cvv != nil {
+			return *x.xxx_hidden_Cvv
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *CardRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 6)
+}
+
+func (x *CardRequest) SetCardNumber(v string) {
+	x.xxx_hidden_CardNumber = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 6)
+}
+
+func (x *CardRequest) SetCardHolder(v string) {
+	x.xxx_hidden_CardHolder = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 6)
+}
+
+func (x *CardRequest) SetExpiry(v string) {
+	x.xxx_hidden_Expiry = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 6)
+}
+
+func (x *CardRequest) SetCvv(v string) {
+	x.xxx_hidden_Cvv = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 6)
+}
+
+func (x *CardRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 6)
+}
+
+func (x *CardRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *CardRequest) HasCardNumber() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *CardRequest) HasCardHolder() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *CardRequest) HasExpiry() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *CardRequest) HasCvv() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *CardRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *CardRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *CardRequest) ClearCardNumber() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_CardNumber = nil
+}
+
+func (x *CardRequest) ClearCardHolder() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_CardHolder = nil
+}
+
+func (x *CardRequest) ClearExpiry() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_Expiry = nil
+}
+
+func (x *CardRequest) ClearCvv() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Cvv = nil
+}
+
+func (x *CardRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Meta = nil
+}
+
+type CardRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Title      *string
+	CardNumber *string
+	CardHolder *string
+	Expiry     *string
+	Cvv        *string
+	Meta       *string
+}
+
+func (b0 CardRequest_builder) Build() *CardRequest {
+	m0 := &CardRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 6)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.CardNumber != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 6)
+		x.xxx_hidden_CardNumber = b.CardNumber
+	}
+	if b.CardHolder != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 6)
+		x.xxx_hidden_CardHolder = b.CardHolder
+	}
+	if b.Expiry != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 6)
+		x.xxx_hidden_Expiry = b.Expiry
+	}
+	if b.Cvv != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 6)
+		x.xxx_hidden_Cvv = b.Cvv
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 6)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	return m0
+}
+
 type UpdateCardRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	CardNumber    string                 `protobuf:"bytes,3,opt,name=card_number,json=cardNumber,proto3" json:"card_number,omitempty"`
-	CardHolder    string                 `protobuf:"bytes,4,opt,name=card_holder,json=cardHolder,proto3" json:"card_holder,omitempty"`
-	Expiry        string                 `protobuf:"bytes,5,opt,name=expiry,proto3" json:"expiry,omitempty"`
-	Cvv           string                 `protobuf:"bytes,6,opt,name=cvv,proto3" json:"cvv,omitempty"`
-	Meta          string                 `protobuf:"bytes,7,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,8,opt,name=version,proto3" json:"version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_CardNumber  *string                `protobuf:"bytes,3,opt,name=card_number,json=cardNumber"`
+	xxx_hidden_CardHolder  *string                `protobuf:"bytes,4,opt,name=card_holder,json=cardHolder"`
+	xxx_hidden_Expiry      *string                `protobuf:"bytes,5,opt,name=expiry"`
+	xxx_hidden_Cvv         *string                `protobuf:"bytes,6,opt,name=cvv"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,7,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,8,opt,name=version"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *UpdateCardRequest) Reset() {
@@ -1179,81 +2784,287 @@ func (x *UpdateCardRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateCardRequest.ProtoReflect.Descriptor instead.
-func (*UpdateCardRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{17}
-}
-
 func (x *UpdateCardRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetCardNumber() string {
 	if x != nil {
-		return x.CardNumber
+		if x.xxx_hidden_CardNumber != nil {
+			return *x.xxx_hidden_CardNumber
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetCardHolder() string {
 	if x != nil {
-		return x.CardHolder
+		if x.xxx_hidden_CardHolder != nil {
+			return *x.xxx_hidden_CardHolder
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetExpiry() string {
 	if x != nil {
-		return x.Expiry
+		if x.xxx_hidden_Expiry != nil {
+			return *x.xxx_hidden_Expiry
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetCvv() string {
 	if x != nil {
-		return x.Cvv
+		if x.xxx_hidden_Cvv != nil {
+			return *x.xxx_hidden_Cvv
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *UpdateCardRequest) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
+func (x *UpdateCardRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 8)
+}
+
+func (x *UpdateCardRequest) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 8)
+}
+
+func (x *UpdateCardRequest) SetCardNumber(v string) {
+	x.xxx_hidden_CardNumber = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 8)
+}
+
+func (x *UpdateCardRequest) SetCardHolder(v string) {
+	x.xxx_hidden_CardHolder = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 8)
+}
+
+func (x *UpdateCardRequest) SetExpiry(v string) {
+	x.xxx_hidden_Expiry = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 8)
+}
+
+func (x *UpdateCardRequest) SetCvv(v string) {
+	x.xxx_hidden_Cvv = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 8)
+}
+
+func (x *UpdateCardRequest) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 8)
+}
+
+func (x *UpdateCardRequest) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 8)
+}
+
+func (x *UpdateCardRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *UpdateCardRequest) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *UpdateCardRequest) HasCardNumber() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *UpdateCardRequest) HasCardHolder() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *UpdateCardRequest) HasExpiry() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *UpdateCardRequest) HasCvv() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *UpdateCardRequest) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *UpdateCardRequest) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *UpdateCardRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *UpdateCardRequest) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *UpdateCardRequest) ClearCardNumber() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_CardNumber = nil
+}
+
+func (x *UpdateCardRequest) ClearCardHolder() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_CardHolder = nil
+}
+
+func (x *UpdateCardRequest) ClearExpiry() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Expiry = nil
+}
+
+func (x *UpdateCardRequest) ClearCvv() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Cvv = nil
+}
+
+func (x *UpdateCardRequest) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *UpdateCardRequest) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_Version = 0
+}
+
+type UpdateCardRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id         *string
+	Title      *string
+	CardNumber *string
+	CardHolder *string
+	Expiry     *string
+	Cvv        *string
+	Meta       *string
+	Version    *int32
+}
+
+func (b0 UpdateCardRequest_builder) Build() *UpdateCardRequest {
+	m0 := &UpdateCardRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 8)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 8)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.CardNumber != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 8)
+		x.xxx_hidden_CardNumber = b.CardNumber
+	}
+	if b.CardHolder != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 8)
+		x.xxx_hidden_CardHolder = b.CardHolder
+	}
+	if b.Expiry != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 8)
+		x.xxx_hidden_Expiry = b.Expiry
+	}
+	if b.Cvv != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 8)
+		x.xxx_hidden_Cvv = b.Cvv
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 8)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 8)
+		x.xxx_hidden_Version = *b.Version
+	}
+	return m0
+}
+
 type CardResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	CardNumber    string                 `protobuf:"bytes,3,opt,name=card_number,json=cardNumber,proto3" json:"card_number,omitempty"`
-	CardHolder    string                 `protobuf:"bytes,4,opt,name=card_holder,json=cardHolder,proto3" json:"card_holder,omitempty"`
-	Expiry        string                 `protobuf:"bytes,5,opt,name=expiry,proto3" json:"expiry,omitempty"`
-	Cvv           string                 `protobuf:"bytes,6,opt,name=cvv,proto3" json:"cvv,omitempty"`
-	Meta          string                 `protobuf:"bytes,7,opt,name=meta,proto3" json:"meta,omitempty"`
-	Version       int32                  `protobuf:"varint,8,opt,name=version,proto3" json:"version,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	xxx_hidden_Title       *string                `protobuf:"bytes,2,opt,name=title"`
+	xxx_hidden_CardNumber  *string                `protobuf:"bytes,3,opt,name=card_number,json=cardNumber"`
+	xxx_hidden_CardHolder  *string                `protobuf:"bytes,4,opt,name=card_holder,json=cardHolder"`
+	xxx_hidden_Expiry      *string                `protobuf:"bytes,5,opt,name=expiry"`
+	xxx_hidden_Cvv         *string                `protobuf:"bytes,6,opt,name=cvv"`
+	xxx_hidden_Meta        *string                `protobuf:"bytes,7,opt,name=meta"`
+	xxx_hidden_Version     int32                  `protobuf:"varint,8,opt,name=version"`
+	xxx_hidden_CreatedAt   *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=created_at,json=createdAt"`
+	xxx_hidden_UpdatedAt   *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *CardResponse) Reset() {
@@ -1281,86 +3092,324 @@ func (x *CardResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CardResponse.ProtoReflect.Descriptor instead.
-func (*CardResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{18}
-}
-
 func (x *CardResponse) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetTitle() string {
 	if x != nil {
-		return x.Title
+		if x.xxx_hidden_Title != nil {
+			return *x.xxx_hidden_Title
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetCardNumber() string {
 	if x != nil {
-		return x.CardNumber
+		if x.xxx_hidden_CardNumber != nil {
+			return *x.xxx_hidden_CardNumber
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetCardHolder() string {
 	if x != nil {
-		return x.CardHolder
+		if x.xxx_hidden_CardHolder != nil {
+			return *x.xxx_hidden_CardHolder
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetExpiry() string {
 	if x != nil {
-		return x.Expiry
+		if x.xxx_hidden_Expiry != nil {
+			return *x.xxx_hidden_Expiry
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetCvv() string {
 	if x != nil {
-		return x.Cvv
+		if x.xxx_hidden_Cvv != nil {
+			return *x.xxx_hidden_Cvv
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetMeta() string {
 	if x != nil {
-		return x.Meta
+		if x.xxx_hidden_Meta != nil {
+			return *x.xxx_hidden_Meta
+		}
+		return ""
 	}
 	return ""
 }
 
 func (x *CardResponse) GetVersion() int32 {
 	if x != nil {
-		return x.Version
+		return x.xxx_hidden_Version
 	}
 	return 0
 }
 
 func (x *CardResponse) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreatedAt
+		return x.xxx_hidden_CreatedAt
 	}
 	return nil
 }
 
 func (x *CardResponse) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
-		return x.UpdatedAt
+		return x.xxx_hidden_UpdatedAt
 	}
 	return nil
 }
 
+func (x *CardResponse) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 10)
+}
+
+func (x *CardResponse) SetTitle(v string) {
+	x.xxx_hidden_Title = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 1, 10)
+}
+
+func (x *CardResponse) SetCardNumber(v string) {
+	x.xxx_hidden_CardNumber = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 2, 10)
+}
+
+func (x *CardResponse) SetCardHolder(v string) {
+	x.xxx_hidden_CardHolder = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 3, 10)
+}
+
+func (x *CardResponse) SetExpiry(v string) {
+	x.xxx_hidden_Expiry = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 4, 10)
+}
+
+func (x *CardResponse) SetCvv(v string) {
+	x.xxx_hidden_Cvv = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 5, 10)
+}
+
+func (x *CardResponse) SetMeta(v string) {
+	x.xxx_hidden_Meta = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 6, 10)
+}
+
+func (x *CardResponse) SetVersion(v int32) {
+	x.xxx_hidden_Version = v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 7, 10)
+}
+
+func (x *CardResponse) SetCreatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CreatedAt = v
+}
+
+func (x *CardResponse) SetUpdatedAt(v *timestamppb.Timestamp) {
+	x.xxx_hidden_UpdatedAt = v
+}
+
+func (x *CardResponse) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *CardResponse) HasTitle() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 1)
+}
+
+func (x *CardResponse) HasCardNumber() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 2)
+}
+
+func (x *CardResponse) HasCardHolder() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 3)
+}
+
+func (x *CardResponse) HasExpiry() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 4)
+}
+
+func (x *CardResponse) HasCvv() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 5)
+}
+
+func (x *CardResponse) HasMeta() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 6)
+}
+
+func (x *CardResponse) HasVersion() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 7)
+}
+
+func (x *CardResponse) HasCreatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CreatedAt != nil
+}
+
+func (x *CardResponse) HasUpdatedAt() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_UpdatedAt != nil
+}
+
+func (x *CardResponse) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+func (x *CardResponse) ClearTitle() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 1)
+	x.xxx_hidden_Title = nil
+}
+
+func (x *CardResponse) ClearCardNumber() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 2)
+	x.xxx_hidden_CardNumber = nil
+}
+
+func (x *CardResponse) ClearCardHolder() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 3)
+	x.xxx_hidden_CardHolder = nil
+}
+
+func (x *CardResponse) ClearExpiry() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 4)
+	x.xxx_hidden_Expiry = nil
+}
+
+func (x *CardResponse) ClearCvv() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 5)
+	x.xxx_hidden_Cvv = nil
+}
+
+func (x *CardResponse) ClearMeta() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 6)
+	x.xxx_hidden_Meta = nil
+}
+
+func (x *CardResponse) ClearVersion() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 7)
+	x.xxx_hidden_Version = 0
+}
+
+func (x *CardResponse) ClearCreatedAt() {
+	x.xxx_hidden_CreatedAt = nil
+}
+
+func (x *CardResponse) ClearUpdatedAt() {
+	x.xxx_hidden_UpdatedAt = nil
+}
+
+type CardResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id         *string
+	Title      *string
+	CardNumber *string
+	CardHolder *string
+	Expiry     *string
+	Cvv        *string
+	Meta       *string
+	Version    *int32
+	CreatedAt  *timestamppb.Timestamp
+	UpdatedAt  *timestamppb.Timestamp
+}
+
+func (b0 CardResponse_builder) Build() *CardResponse {
+	m0 := &CardResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 10)
+		x.xxx_hidden_Id = b.Id
+	}
+	if b.Title != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 1, 10)
+		x.xxx_hidden_Title = b.Title
+	}
+	if b.CardNumber != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 2, 10)
+		x.xxx_hidden_CardNumber = b.CardNumber
+	}
+	if b.CardHolder != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 3, 10)
+		x.xxx_hidden_CardHolder = b.CardHolder
+	}
+	if b.Expiry != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 4, 10)
+		x.xxx_hidden_Expiry = b.Expiry
+	}
+	if b.Cvv != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 5, 10)
+		x.xxx_hidden_Cvv = b.Cvv
+	}
+	if b.Meta != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 6, 10)
+		x.xxx_hidden_Meta = b.Meta
+	}
+	if b.Version != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 7, 10)
+		x.xxx_hidden_Version = *b.Version
+	}
+	x.xxx_hidden_CreatedAt = b.CreatedAt
+	x.xxx_hidden_UpdatedAt = b.UpdatedAt
+	return m0
+}
+
 type CardsListResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Cards         []*CardResponse        `protobuf:"bytes,1,rep,name=cards,proto3" json:"cards,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Cards *[]*CardResponse       `protobuf:"bytes,1,rep,name=cards"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *CardsListResponse) Reset() {
@@ -1388,23 +3437,40 @@ func (x *CardsListResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CardsListResponse.ProtoReflect.Descriptor instead.
-func (*CardsListResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{19}
-}
-
 func (x *CardsListResponse) GetCards() []*CardResponse {
 	if x != nil {
-		return x.Cards
+		if x.xxx_hidden_Cards != nil {
+			return *x.xxx_hidden_Cards
+		}
 	}
 	return nil
 }
 
+func (x *CardsListResponse) SetCards(v []*CardResponse) {
+	x.xxx_hidden_Cards = &v
+}
+
+type CardsListResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Cards []*CardResponse
+}
+
+func (b0 CardsListResponse_builder) Build() *CardsListResponse {
+	m0 := &CardsListResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Cards = &b.Cards
+	return m0
+}
+
 type GetRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *GetRequest) Reset() {
@@ -1432,23 +3498,57 @@ func (x *GetRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetRequest.ProtoReflect.Descriptor instead.
-func (*GetRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{20}
-}
-
 func (x *GetRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
+func (x *GetRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *GetRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *GetRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+type GetRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id *string
+}
+
+func (b0 GetRequest_builder) Build() *GetRequest {
+	m0 := &GetRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
 type DeleteRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Id          *string                `protobuf:"bytes,1,opt,name=id"`
+	XXX_raceDetectHookData protoimpl.RaceDetectHookData
+	XXX_presence           [1]uint32
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *DeleteRequest) Reset() {
@@ -1476,28 +3576,275 @@ func (x *DeleteRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteRequest.ProtoReflect.Descriptor instead.
-func (*DeleteRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{21}
-}
-
 func (x *DeleteRequest) GetId() string {
 	if x != nil {
-		return x.Id
+		if x.xxx_hidden_Id != nil {
+			return *x.xxx_hidden_Id
+		}
+		return ""
 	}
 	return ""
 }
 
-type SyncRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	LastSync      *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=last_sync,json=lastSync,proto3" json:"last_sync,omitempty"`
+func (x *DeleteRequest) SetId(v string) {
+	x.xxx_hidden_Id = &v
+	protoimpl.X.SetPresent(&(x.XXX_presence[0]), 0, 1)
+}
+
+func (x *DeleteRequest) HasId() bool {
+	if x == nil {
+		return false
+	}
+	return protoimpl.X.Present(&(x.XXX_presence[0]), 0)
+}
+
+func (x *DeleteRequest) ClearId() {
+	protoimpl.X.ClearPresent(&(x.XXX_presence[0]), 0)
+	x.xxx_hidden_Id = nil
+}
+
+type DeleteRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Id *string
+}
+
+func (b0 DeleteRequest_builder) Build() *DeleteRequest {
+	m0 := &DeleteRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Id != nil {
+		protoimpl.X.SetPresentNonAtomic(&(x.XXX_presence[0]), 0, 1)
+		x.xxx_hidden_Id = b.Id
+	}
+	return m0
+}
+
+type DeleteResponse struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
+func (x *DeleteResponse) Reset() {
+	*x = DeleteResponse{}
+	mi := &file_api_proto_keeper_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteResponse) ProtoMessage() {}
+
+func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_keeper_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type DeleteResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 DeleteResponse_builder) Build() *DeleteResponse {
+	m0 := &DeleteResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type ListCredentialsRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCredentialsRequest) Reset() {
+	*x = ListCredentialsRequest{}
+	mi := &file_api_proto_keeper_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCredentialsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCredentialsRequest) ProtoMessage() {}
+
+func (x *ListCredentialsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_keeper_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type ListCredentialsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 ListCredentialsRequest_builder) Build() *ListCredentialsRequest {
+	m0 := &ListCredentialsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type ListTextDataRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTextDataRequest) Reset() {
+	*x = ListTextDataRequest{}
+	mi := &file_api_proto_keeper_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTextDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTextDataRequest) ProtoMessage() {}
+
+func (x *ListTextDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_keeper_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type ListTextDataRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 ListTextDataRequest_builder) Build() *ListTextDataRequest {
+	m0 := &ListTextDataRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type ListBinaryDataRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListBinaryDataRequest) Reset() {
+	*x = ListBinaryDataRequest{}
+	mi := &file_api_proto_keeper_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListBinaryDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListBinaryDataRequest) ProtoMessage() {}
+
+func (x *ListBinaryDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_keeper_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type ListBinaryDataRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 ListBinaryDataRequest_builder) Build() *ListBinaryDataRequest {
+	m0 := &ListBinaryDataRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type ListCardsRequest struct {
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCardsRequest) Reset() {
+	*x = ListCardsRequest{}
+	mi := &file_api_proto_keeper_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCardsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCardsRequest) ProtoMessage() {}
+
+func (x *ListCardsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_keeper_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+type ListCardsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 ListCardsRequest_builder) Build() *ListCardsRequest {
+	m0 := &ListCardsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
+}
+
+type SyncRequest struct {
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_LastSync *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=last_sync,json=lastSync"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
 func (x *SyncRequest) Reset() {
 	*x = SyncRequest{}
-	mi := &file_api_proto_keeper_proto_msgTypes[22]
+	mi := &file_api_proto_keeper_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1509,7 +3856,7 @@ func (x *SyncRequest) String() string {
 func (*SyncRequest) ProtoMessage() {}
 
 func (x *SyncRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_keeper_proto_msgTypes[22]
+	mi := &file_api_proto_keeper_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1520,32 +3867,56 @@ func (x *SyncRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SyncRequest.ProtoReflect.Descriptor instead.
-func (*SyncRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{22}
-}
-
 func (x *SyncRequest) GetLastSync() *timestamppb.Timestamp {
 	if x != nil {
-		return x.LastSync
+		return x.xxx_hidden_LastSync
 	}
 	return nil
 }
 
+func (x *SyncRequest) SetLastSync(v *timestamppb.Timestamp) {
+	x.xxx_hidden_LastSync = v
+}
+
+func (x *SyncRequest) HasLastSync() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_LastSync != nil
+}
+
+func (x *SyncRequest) ClearLastSync() {
+	x.xxx_hidden_LastSync = nil
+}
+
+type SyncRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	LastSync *timestamppb.Timestamp
+}
+
+func (b0 SyncRequest_builder) Build() *SyncRequest {
+	m0 := &SyncRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_LastSync = b.LastSync
+	return m0
+}
+
 type SyncResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Credentials   []*CredentialResponse  `protobuf:"bytes,1,rep,name=credentials,proto3" json:"credentials,omitempty"`
-	TextData      []*TextDataResponse    `protobuf:"bytes,2,rep,name=text_data,json=textData,proto3" json:"text_data,omitempty"`
-	BinaryData    []*BinaryDataResponse  `protobuf:"bytes,3,rep,name=binary_data,json=binaryData,proto3" json:"binary_data,omitempty"`
-	Cards         []*CardResponse        `protobuf:"bytes,4,rep,name=cards,proto3" json:"cards,omitempty"`
-	ServerTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=server_time,json=serverTime,proto3" json:"server_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Credentials *[]*CredentialResponse `protobuf:"bytes,1,rep,name=credentials"`
+	xxx_hidden_TextData    *[]*TextDataResponse   `protobuf:"bytes,2,rep,name=text_data,json=textData"`
+	xxx_hidden_BinaryData  *[]*BinaryDataResponse `protobuf:"bytes,3,rep,name=binary_data,json=binaryData"`
+	xxx_hidden_Cards       *[]*CardResponse       `protobuf:"bytes,4,rep,name=cards"`
+	xxx_hidden_ServerTime  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=server_time,json=serverTime"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *SyncResponse) Reset() {
 	*x = SyncResponse{}
-	mi := &file_api_proto_keeper_proto_msgTypes[23]
+	mi := &file_api_proto_keeper_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1557,7 +3928,7 @@ func (x *SyncResponse) String() string {
 func (*SyncResponse) ProtoMessage() {}
 
 func (x *SyncResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_keeper_proto_msgTypes[23]
+	mi := &file_api_proto_keeper_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1568,51 +3939,107 @@ func (x *SyncResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SyncResponse.ProtoReflect.Descriptor instead.
-func (*SyncResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_keeper_proto_rawDescGZIP(), []int{23}
-}
-
 func (x *SyncResponse) GetCredentials() []*CredentialResponse {
 	if x != nil {
-		return x.Credentials
+		if x.xxx_hidden_Credentials != nil {
+			return *x.xxx_hidden_Credentials
+		}
 	}
 	return nil
 }
 
 func (x *SyncResponse) GetTextData() []*TextDataResponse {
 	if x != nil {
-		return x.TextData
+		if x.xxx_hidden_TextData != nil {
+			return *x.xxx_hidden_TextData
+		}
 	}
 	return nil
 }
 
 func (x *SyncResponse) GetBinaryData() []*BinaryDataResponse {
 	if x != nil {
-		return x.BinaryData
+		if x.xxx_hidden_BinaryData != nil {
+			return *x.xxx_hidden_BinaryData
+		}
 	}
 	return nil
 }
 
 func (x *SyncResponse) GetCards() []*CardResponse {
 	if x != nil {
-		return x.Cards
+		if x.xxx_hidden_Cards != nil {
+			return *x.xxx_hidden_Cards
+		}
 	}
 	return nil
 }
 
 func (x *SyncResponse) GetServerTime() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ServerTime
+		return x.xxx_hidden_ServerTime
 	}
 	return nil
+}
+
+func (x *SyncResponse) SetCredentials(v []*CredentialResponse) {
+	x.xxx_hidden_Credentials = &v
+}
+
+func (x *SyncResponse) SetTextData(v []*TextDataResponse) {
+	x.xxx_hidden_TextData = &v
+}
+
+func (x *SyncResponse) SetBinaryData(v []*BinaryDataResponse) {
+	x.xxx_hidden_BinaryData = &v
+}
+
+func (x *SyncResponse) SetCards(v []*CardResponse) {
+	x.xxx_hidden_Cards = &v
+}
+
+func (x *SyncResponse) SetServerTime(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ServerTime = v
+}
+
+func (x *SyncResponse) HasServerTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ServerTime != nil
+}
+
+func (x *SyncResponse) ClearServerTime() {
+	x.xxx_hidden_ServerTime = nil
+}
+
+type SyncResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	Credentials []*CredentialResponse
+	TextData    []*TextDataResponse
+	BinaryData  []*BinaryDataResponse
+	Cards       []*CardResponse
+	ServerTime  *timestamppb.Timestamp
+}
+
+func (b0 SyncResponse_builder) Build() *SyncResponse {
+	m0 := &SyncResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Credentials = &b.Credentials
+	x.xxx_hidden_TextData = &b.TextData
+	x.xxx_hidden_BinaryData = &b.BinaryData
+	x.xxx_hidden_Cards = &b.Cards
+	x.xxx_hidden_ServerTime = b.ServerTime
+	return m0
 }
 
 var File_api_proto_keeper_proto protoreflect.FileDescriptor
 
 const file_api_proto_keeper_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/proto/keeper.proto\x12\x06keeper\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\"C\n" +
+	"\x16api/proto/keeper.proto\x12\x06keeper\x1a!google/protobuf/go_features.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"C\n" +
 	"\x0fRegisterRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"(\n" +
@@ -1735,7 +4162,12 @@ const file_api_proto_keeper_proto_rawDesc = "" +
 	"GetRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x1f\n" +
 	"\rDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"F\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x10\n" +
+	"\x0eDeleteResponse\"\x18\n" +
+	"\x16ListCredentialsRequest\"\x15\n" +
+	"\x13ListTextDataRequest\"\x17\n" +
+	"\x15ListBinaryDataRequest\"\x12\n" +
+	"\x10ListCardsRequest\"F\n" +
 	"\vSyncRequest\x127\n" +
 	"\tlast_sync\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\blastSync\"\xa9\x02\n" +
 	"\fSyncResponse\x12<\n" +
@@ -1745,48 +4177,36 @@ const file_api_proto_keeper_proto_rawDesc = "" +
 	"binaryData\x12*\n" +
 	"\x05cards\x18\x04 \x03(\v2\x14.keeper.CardResponseR\x05cards\x12;\n" +
 	"\vserver_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"serverTime2\x8b\f\n" +
+	"serverTime2\xa1\f\n" +
 	"\rKeeperService\x12=\n" +
 	"\bRegister\x12\x17.keeper.RegisterRequest\x1a\x18.keeper.RegisterResponse\x124\n" +
 	"\x05Login\x12\x14.keeper.LoginRequest\x1a\x15.keeper.LoginResponse\x12I\n" +
 	"\x10CreateCredential\x12\x19.keeper.CredentialRequest\x1a\x1a.keeper.CredentialResponse\x12?\n" +
 	"\rGetCredential\x12\x12.keeper.GetRequest\x1a\x1a.keeper.CredentialResponse\x12O\n" +
 	"\x10UpdateCredential\x12\x1f.keeper.UpdateCredentialRequest\x1a\x1a.keeper.CredentialResponse\x12A\n" +
-	"\x10DeleteCredential\x12\x15.keeper.DeleteRequest\x1a\x16.google.protobuf.Empty\x12J\n" +
-	"\x0fListCredentials\x12\x16.google.protobuf.Empty\x1a\x1f.keeper.CredentialsListResponse\x12C\n" +
+	"\x10DeleteCredential\x12\x15.keeper.DeleteRequest\x1a\x16.keeper.DeleteResponse\x12R\n" +
+	"\x0fListCredentials\x12\x1e.keeper.ListCredentialsRequest\x1a\x1f.keeper.CredentialsListResponse\x12C\n" +
 	"\x0eCreateTextData\x12\x17.keeper.TextDataRequest\x1a\x18.keeper.TextDataResponse\x12;\n" +
 	"\vGetTextData\x12\x12.keeper.GetRequest\x1a\x18.keeper.TextDataResponse\x12I\n" +
 	"\x0eUpdateTextData\x12\x1d.keeper.UpdateTextDataRequest\x1a\x18.keeper.TextDataResponse\x12?\n" +
-	"\x0eDeleteTextData\x12\x15.keeper.DeleteRequest\x1a\x16.google.protobuf.Empty\x12D\n" +
-	"\fListTextData\x12\x16.google.protobuf.Empty\x1a\x1c.keeper.TextDataListResponse\x12I\n" +
+	"\x0eDeleteTextData\x12\x15.keeper.DeleteRequest\x1a\x16.keeper.DeleteResponse\x12I\n" +
+	"\fListTextData\x12\x1b.keeper.ListTextDataRequest\x1a\x1c.keeper.TextDataListResponse\x12I\n" +
 	"\x10CreateBinaryData\x12\x19.keeper.BinaryDataRequest\x1a\x1a.keeper.BinaryDataResponse\x12?\n" +
 	"\rGetBinaryData\x12\x12.keeper.GetRequest\x1a\x1a.keeper.BinaryDataResponse\x12O\n" +
 	"\x10UpdateBinaryData\x12\x1f.keeper.UpdateBinaryDataRequest\x1a\x1a.keeper.BinaryDataResponse\x12A\n" +
-	"\x10DeleteBinaryData\x12\x15.keeper.DeleteRequest\x1a\x16.google.protobuf.Empty\x12H\n" +
-	"\x0eListBinaryData\x12\x16.google.protobuf.Empty\x1a\x1e.keeper.BinaryDataListResponse\x127\n" +
+	"\x10DeleteBinaryData\x12\x15.keeper.DeleteRequest\x1a\x16.keeper.DeleteResponse\x12O\n" +
+	"\x0eListBinaryData\x12\x1d.keeper.ListBinaryDataRequest\x1a\x1e.keeper.BinaryDataListResponse\x127\n" +
 	"\n" +
 	"CreateCard\x12\x13.keeper.CardRequest\x1a\x14.keeper.CardResponse\x123\n" +
 	"\aGetCard\x12\x12.keeper.GetRequest\x1a\x14.keeper.CardResponse\x12=\n" +
 	"\n" +
 	"UpdateCard\x12\x19.keeper.UpdateCardRequest\x1a\x14.keeper.CardResponse\x12;\n" +
 	"\n" +
-	"DeleteCard\x12\x15.keeper.DeleteRequest\x1a\x16.google.protobuf.Empty\x12>\n" +
-	"\tListCards\x12\x16.google.protobuf.Empty\x1a\x19.keeper.CardsListResponse\x121\n" +
-	"\x04Sync\x12\x13.keeper.SyncRequest\x1a\x14.keeper.SyncResponseB,Z*github.com/a-blokhin/goph-keeper/api/protob\x06proto3"
+	"DeleteCard\x12\x15.keeper.DeleteRequest\x1a\x16.keeper.DeleteResponse\x12@\n" +
+	"\tListCards\x12\x18.keeper.ListCardsRequest\x1a\x19.keeper.CardsListResponse\x121\n" +
+	"\x04Sync\x12\x13.keeper.SyncRequest\x1a\x14.keeper.SyncResponseB4Z*github.com/a-blokhin/goph-keeper/api/proto\x92\x03\x05\xd2>\x02\x10\x03b\beditionsp\xe9\a"
 
-var (
-	file_api_proto_keeper_proto_rawDescOnce sync.Once
-	file_api_proto_keeper_proto_rawDescData []byte
-)
-
-func file_api_proto_keeper_proto_rawDescGZIP() []byte {
-	file_api_proto_keeper_proto_rawDescOnce.Do(func() {
-		file_api_proto_keeper_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_proto_keeper_proto_rawDesc), len(file_api_proto_keeper_proto_rawDesc)))
-	})
-	return file_api_proto_keeper_proto_rawDescData
-}
-
-var file_api_proto_keeper_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_api_proto_keeper_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_api_proto_keeper_proto_goTypes = []any{
 	(*RegisterRequest)(nil),         // 0: keeper.RegisterRequest
 	(*RegisterResponse)(nil),        // 1: keeper.RegisterResponse
@@ -1810,76 +4230,80 @@ var file_api_proto_keeper_proto_goTypes = []any{
 	(*CardsListResponse)(nil),       // 19: keeper.CardsListResponse
 	(*GetRequest)(nil),              // 20: keeper.GetRequest
 	(*DeleteRequest)(nil),           // 21: keeper.DeleteRequest
-	(*SyncRequest)(nil),             // 22: keeper.SyncRequest
-	(*SyncResponse)(nil),            // 23: keeper.SyncResponse
-	(*timestamppb.Timestamp)(nil),   // 24: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),           // 25: google.protobuf.Empty
+	(*DeleteResponse)(nil),          // 22: keeper.DeleteResponse
+	(*ListCredentialsRequest)(nil),  // 23: keeper.ListCredentialsRequest
+	(*ListTextDataRequest)(nil),     // 24: keeper.ListTextDataRequest
+	(*ListBinaryDataRequest)(nil),   // 25: keeper.ListBinaryDataRequest
+	(*ListCardsRequest)(nil),        // 26: keeper.ListCardsRequest
+	(*SyncRequest)(nil),             // 27: keeper.SyncRequest
+	(*SyncResponse)(nil),            // 28: keeper.SyncResponse
+	(*timestamppb.Timestamp)(nil),   // 29: google.protobuf.Timestamp
 }
 var file_api_proto_keeper_proto_depIdxs = []int32{
-	24, // 0: keeper.CredentialResponse.created_at:type_name -> google.protobuf.Timestamp
-	24, // 1: keeper.CredentialResponse.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 0: keeper.CredentialResponse.created_at:type_name -> google.protobuf.Timestamp
+	29, // 1: keeper.CredentialResponse.updated_at:type_name -> google.protobuf.Timestamp
 	6,  // 2: keeper.CredentialsListResponse.credentials:type_name -> keeper.CredentialResponse
-	24, // 3: keeper.TextDataResponse.created_at:type_name -> google.protobuf.Timestamp
-	24, // 4: keeper.TextDataResponse.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 3: keeper.TextDataResponse.created_at:type_name -> google.protobuf.Timestamp
+	29, // 4: keeper.TextDataResponse.updated_at:type_name -> google.protobuf.Timestamp
 	10, // 5: keeper.TextDataListResponse.text_data:type_name -> keeper.TextDataResponse
-	24, // 6: keeper.BinaryDataResponse.created_at:type_name -> google.protobuf.Timestamp
-	24, // 7: keeper.BinaryDataResponse.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 6: keeper.BinaryDataResponse.created_at:type_name -> google.protobuf.Timestamp
+	29, // 7: keeper.BinaryDataResponse.updated_at:type_name -> google.protobuf.Timestamp
 	14, // 8: keeper.BinaryDataListResponse.binary_data:type_name -> keeper.BinaryDataResponse
-	24, // 9: keeper.CardResponse.created_at:type_name -> google.protobuf.Timestamp
-	24, // 10: keeper.CardResponse.updated_at:type_name -> google.protobuf.Timestamp
+	29, // 9: keeper.CardResponse.created_at:type_name -> google.protobuf.Timestamp
+	29, // 10: keeper.CardResponse.updated_at:type_name -> google.protobuf.Timestamp
 	18, // 11: keeper.CardsListResponse.cards:type_name -> keeper.CardResponse
-	24, // 12: keeper.SyncRequest.last_sync:type_name -> google.protobuf.Timestamp
+	29, // 12: keeper.SyncRequest.last_sync:type_name -> google.protobuf.Timestamp
 	6,  // 13: keeper.SyncResponse.credentials:type_name -> keeper.CredentialResponse
 	10, // 14: keeper.SyncResponse.text_data:type_name -> keeper.TextDataResponse
 	14, // 15: keeper.SyncResponse.binary_data:type_name -> keeper.BinaryDataResponse
 	18, // 16: keeper.SyncResponse.cards:type_name -> keeper.CardResponse
-	24, // 17: keeper.SyncResponse.server_time:type_name -> google.protobuf.Timestamp
+	29, // 17: keeper.SyncResponse.server_time:type_name -> google.protobuf.Timestamp
 	0,  // 18: keeper.KeeperService.Register:input_type -> keeper.RegisterRequest
 	2,  // 19: keeper.KeeperService.Login:input_type -> keeper.LoginRequest
 	4,  // 20: keeper.KeeperService.CreateCredential:input_type -> keeper.CredentialRequest
 	20, // 21: keeper.KeeperService.GetCredential:input_type -> keeper.GetRequest
 	5,  // 22: keeper.KeeperService.UpdateCredential:input_type -> keeper.UpdateCredentialRequest
 	21, // 23: keeper.KeeperService.DeleteCredential:input_type -> keeper.DeleteRequest
-	25, // 24: keeper.KeeperService.ListCredentials:input_type -> google.protobuf.Empty
+	23, // 24: keeper.KeeperService.ListCredentials:input_type -> keeper.ListCredentialsRequest
 	8,  // 25: keeper.KeeperService.CreateTextData:input_type -> keeper.TextDataRequest
 	20, // 26: keeper.KeeperService.GetTextData:input_type -> keeper.GetRequest
 	9,  // 27: keeper.KeeperService.UpdateTextData:input_type -> keeper.UpdateTextDataRequest
 	21, // 28: keeper.KeeperService.DeleteTextData:input_type -> keeper.DeleteRequest
-	25, // 29: keeper.KeeperService.ListTextData:input_type -> google.protobuf.Empty
+	24, // 29: keeper.KeeperService.ListTextData:input_type -> keeper.ListTextDataRequest
 	12, // 30: keeper.KeeperService.CreateBinaryData:input_type -> keeper.BinaryDataRequest
 	20, // 31: keeper.KeeperService.GetBinaryData:input_type -> keeper.GetRequest
 	13, // 32: keeper.KeeperService.UpdateBinaryData:input_type -> keeper.UpdateBinaryDataRequest
 	21, // 33: keeper.KeeperService.DeleteBinaryData:input_type -> keeper.DeleteRequest
-	25, // 34: keeper.KeeperService.ListBinaryData:input_type -> google.protobuf.Empty
+	25, // 34: keeper.KeeperService.ListBinaryData:input_type -> keeper.ListBinaryDataRequest
 	16, // 35: keeper.KeeperService.CreateCard:input_type -> keeper.CardRequest
 	20, // 36: keeper.KeeperService.GetCard:input_type -> keeper.GetRequest
 	17, // 37: keeper.KeeperService.UpdateCard:input_type -> keeper.UpdateCardRequest
 	21, // 38: keeper.KeeperService.DeleteCard:input_type -> keeper.DeleteRequest
-	25, // 39: keeper.KeeperService.ListCards:input_type -> google.protobuf.Empty
-	22, // 40: keeper.KeeperService.Sync:input_type -> keeper.SyncRequest
+	26, // 39: keeper.KeeperService.ListCards:input_type -> keeper.ListCardsRequest
+	27, // 40: keeper.KeeperService.Sync:input_type -> keeper.SyncRequest
 	1,  // 41: keeper.KeeperService.Register:output_type -> keeper.RegisterResponse
 	3,  // 42: keeper.KeeperService.Login:output_type -> keeper.LoginResponse
 	6,  // 43: keeper.KeeperService.CreateCredential:output_type -> keeper.CredentialResponse
 	6,  // 44: keeper.KeeperService.GetCredential:output_type -> keeper.CredentialResponse
 	6,  // 45: keeper.KeeperService.UpdateCredential:output_type -> keeper.CredentialResponse
-	25, // 46: keeper.KeeperService.DeleteCredential:output_type -> google.protobuf.Empty
+	22, // 46: keeper.KeeperService.DeleteCredential:output_type -> keeper.DeleteResponse
 	7,  // 47: keeper.KeeperService.ListCredentials:output_type -> keeper.CredentialsListResponse
 	10, // 48: keeper.KeeperService.CreateTextData:output_type -> keeper.TextDataResponse
 	10, // 49: keeper.KeeperService.GetTextData:output_type -> keeper.TextDataResponse
 	10, // 50: keeper.KeeperService.UpdateTextData:output_type -> keeper.TextDataResponse
-	25, // 51: keeper.KeeperService.DeleteTextData:output_type -> google.protobuf.Empty
+	22, // 51: keeper.KeeperService.DeleteTextData:output_type -> keeper.DeleteResponse
 	11, // 52: keeper.KeeperService.ListTextData:output_type -> keeper.TextDataListResponse
 	14, // 53: keeper.KeeperService.CreateBinaryData:output_type -> keeper.BinaryDataResponse
 	14, // 54: keeper.KeeperService.GetBinaryData:output_type -> keeper.BinaryDataResponse
 	14, // 55: keeper.KeeperService.UpdateBinaryData:output_type -> keeper.BinaryDataResponse
-	25, // 56: keeper.KeeperService.DeleteBinaryData:output_type -> google.protobuf.Empty
+	22, // 56: keeper.KeeperService.DeleteBinaryData:output_type -> keeper.DeleteResponse
 	15, // 57: keeper.KeeperService.ListBinaryData:output_type -> keeper.BinaryDataListResponse
 	18, // 58: keeper.KeeperService.CreateCard:output_type -> keeper.CardResponse
 	18, // 59: keeper.KeeperService.GetCard:output_type -> keeper.CardResponse
 	18, // 60: keeper.KeeperService.UpdateCard:output_type -> keeper.CardResponse
-	25, // 61: keeper.KeeperService.DeleteCard:output_type -> google.protobuf.Empty
+	22, // 61: keeper.KeeperService.DeleteCard:output_type -> keeper.DeleteResponse
 	19, // 62: keeper.KeeperService.ListCards:output_type -> keeper.CardsListResponse
-	23, // 63: keeper.KeeperService.Sync:output_type -> keeper.SyncResponse
+	28, // 63: keeper.KeeperService.Sync:output_type -> keeper.SyncResponse
 	41, // [41:64] is the sub-list for method output_type
 	18, // [18:41] is the sub-list for method input_type
 	18, // [18:18] is the sub-list for extension type_name
@@ -1898,7 +4322,7 @@ func file_api_proto_keeper_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_keeper_proto_rawDesc), len(file_api_proto_keeper_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   24,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

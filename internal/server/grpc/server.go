@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/a-blokhin/goph-keeper/api/proto"
-	"github.com/a-blokhin/goph-keeper/internal/crypto"
 	"github.com/a-blokhin/goph-keeper/internal/jwt"
 	"github.com/a-blokhin/goph-keeper/internal/model"
 	"github.com/a-blokhin/goph-keeper/internal/usecase/auth/login"
@@ -35,7 +34,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
+	protobuf "google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -43,7 +42,6 @@ type Server struct {
 	proto.UnimplementedKeeperServiceServer
 	logger          *zap.Logger
 	jwtManager      *jwt.JWTManager
-	encryptor       *crypto.Encryptor
 	registerUsecase register.RegisterUsecase
 	loginUsecase    login.LoginUsecase
 
@@ -77,7 +75,6 @@ type Server struct {
 func NewServer(
 	logger *zap.Logger,
 	jwtManager *jwt.JWTManager,
-	encryptor *crypto.Encryptor,
 	registerUsecase register.RegisterUsecase,
 	loginUsecase login.LoginUsecase,
 	credentialCreateUsecase credentialCreate.CreateCredentialUsecase,
@@ -105,7 +102,6 @@ func NewServer(
 	return &Server{
 		logger:                  logger,
 		jwtManager:              jwtManager,
-		encryptor:               encryptor,
 		registerUsecase:         registerUsecase,
 		loginUsecase:            loginUsecase,
 		credentialCreateUsecase: credentialCreateUsecase,
@@ -133,9 +129,9 @@ func NewServer(
 }
 
 func (s *Server) Register(ctx context.Context, req *proto.RegisterRequest) (*proto.RegisterResponse, error) {
-	s.logger.Info("Register request", zap.String("email", req.Email))
+	s.logger.Info("Register request", zap.String("email", req.GetEmail()))
 
-	user, token, err := s.registerUsecase.Execute(ctx, req.Email, req.Password)
+	user, token, err := s.registerUsecase.Execute(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
 		s.logger.Error("Register failed", zap.Error(err))
 		if errors.Is(err, model.ErrUserAlreadyExists) {
@@ -146,15 +142,15 @@ func (s *Server) Register(ctx context.Context, req *proto.RegisterRequest) (*pro
 
 	s.logger.Info("User registered", zap.String("user_id", user.ID))
 
-	return &proto.RegisterResponse{
-		Token: token,
-	}, nil
+	return proto.RegisterResponse_builder{
+		Token: protobuf.String(token),
+	}.Build(), nil
 }
 
 func (s *Server) Login(ctx context.Context, req *proto.LoginRequest) (*proto.LoginResponse, error) {
-	s.logger.Info("Login request", zap.String("email", req.Email))
+	s.logger.Info("Login request", zap.String("email", req.GetEmail()))
 
-	user, token, err := s.loginUsecase.Execute(ctx, req.Email, req.Password)
+	user, token, err := s.loginUsecase.Execute(ctx, req.GetEmail(), req.GetPassword())
 	if err != nil {
 		s.logger.Error("Login failed", zap.Error(err))
 		if errors.Is(err, model.ErrInvalidCredentials) {
@@ -165,9 +161,9 @@ func (s *Server) Login(ctx context.Context, req *proto.LoginRequest) (*proto.Log
 
 	s.logger.Info("User logged in", zap.String("user_id", user.ID))
 
-	return &proto.LoginResponse{
-		Token: token,
-	}, nil
+	return proto.LoginResponse_builder{
+		Token: protobuf.String(token),
+	}.Build(), nil
 }
 
 func (s *Server) CreateCredential(ctx context.Context, req *proto.CredentialRequest) (*proto.CredentialResponse, error) {
@@ -176,20 +172,13 @@ func (s *Server) CreateCredential(ctx context.Context, req *proto.CredentialRequ
 		return nil, err
 	}
 
-	s.logger.Info("CreateCredential request", zap.String("user_id", userID), zap.String("title", req.Title))
-
-	// Encrypt password
-	encryptedPassword, err := s.encryptor.Encrypt([]byte(req.Password))
-	if err != nil {
-		s.logger.Error("Failed to encrypt password", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt password")
-	}
+	s.logger.Info("CreateCredential request", zap.String("user_id", userID), zap.String("title", req.GetTitle()))
 
 	credential := &model.Credential{
-		Title:             req.Title,
-		Login:             req.Login,
-		PasswordEncrypted: encryptedPassword,
-		Meta:              req.Meta,
+		Title:             req.GetTitle(),
+		Login:             req.GetLogin(),
+		PasswordEncrypted: req.GetPassword(),
+		Meta:              req.GetMeta(),
 	}
 
 	err = s.credentialCreateUsecase.Execute(ctx, userID, credential)
@@ -207,9 +196,9 @@ func (s *Server) GetCredential(ctx context.Context, req *proto.GetRequest) (*pro
 		return nil, err
 	}
 
-	s.logger.Info("GetCredential request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("GetCredential request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	credential, err := s.credentialGetUsecase.Execute(ctx, userID, req.Id)
+	credential, err := s.credentialGetUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("GetCredential failed", zap.Error(err))
 		if errors.Is(err, model.ErrCredentialNotFound) {
@@ -227,22 +216,15 @@ func (s *Server) UpdateCredential(ctx context.Context, req *proto.UpdateCredenti
 		return nil, err
 	}
 
-	s.logger.Info("UpdateCredential request", zap.String("user_id", userID), zap.String("id", req.Id))
-
-	// Encrypt password
-	encryptedPassword, err := s.encryptor.Encrypt([]byte(req.Password))
-	if err != nil {
-		s.logger.Error("Failed to encrypt password", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt password")
-	}
+	s.logger.Info("UpdateCredential request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
 	credential := &model.Credential{
-		ID:                req.Id,
-		Title:             req.Title,
-		Login:             req.Login,
-		PasswordEncrypted: encryptedPassword,
-		Meta:              req.Meta,
-		Version:           int32(req.Version),
+		ID:                req.GetId(),
+		Title:             req.GetTitle(),
+		Login:             req.GetLogin(),
+		PasswordEncrypted: req.GetPassword(),
+		Meta:              req.GetMeta(),
+		Version:           req.GetVersion(),
 	}
 
 	err = s.credentialUpdateUsecase.Execute(ctx, userID, credential)
@@ -263,15 +245,15 @@ func (s *Server) UpdateCredential(ctx context.Context, req *proto.UpdateCredenti
 	return s.credentialToProto(credential)
 }
 
-func (s *Server) DeleteCredential(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
+func (s *Server) DeleteCredential(ctx context.Context, req *proto.DeleteRequest) (*proto.DeleteResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	s.logger.Info("DeleteCredential request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("DeleteCredential request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	err = s.credentialDeleteUsecase.Execute(ctx, userID, req.Id)
+	err = s.credentialDeleteUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("DeleteCredential failed", zap.Error(err))
 		if errors.Is(err, model.ErrCredentialNotFound) {
@@ -283,10 +265,10 @@ func (s *Server) DeleteCredential(ctx context.Context, req *proto.DeleteRequest)
 		return nil, status.Error(codes.Internal, "failed to delete credential")
 	}
 
-	return &emptypb.Empty{}, nil
+	return proto.DeleteResponse_builder{}.Build(), nil
 }
 
-func (s *Server) ListCredentials(ctx context.Context, _ *emptypb.Empty) (*proto.CredentialsListResponse, error) {
+func (s *Server) ListCredentials(ctx context.Context, _ *proto.ListCredentialsRequest) (*proto.CredentialsListResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
@@ -310,9 +292,9 @@ func (s *Server) ListCredentials(ctx context.Context, _ *emptypb.Empty) (*proto.
 		protoCredentials[i] = protoCred
 	}
 
-	return &proto.CredentialsListResponse{
+	return proto.CredentialsListResponse_builder{
 		Credentials: protoCredentials,
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) CreateTextData(ctx context.Context, req *proto.TextDataRequest) (*proto.TextDataResponse, error) {
@@ -321,19 +303,12 @@ func (s *Server) CreateTextData(ctx context.Context, req *proto.TextDataRequest)
 		return nil, err
 	}
 
-	s.logger.Info("CreateTextData request", zap.String("user_id", userID), zap.String("title", req.Title))
-
-	// Encrypt data
-	encryptedData, err := s.encryptor.Encrypt([]byte(req.Data))
-	if err != nil {
-		s.logger.Error("Failed to encrypt text data", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt text data")
-	}
+	s.logger.Info("CreateTextData request", zap.String("user_id", userID), zap.String("title", req.GetTitle()))
 
 	textData := &model.TextData{
-		Title:         req.Title,
-		DataEncrypted: encryptedData,
-		Meta:          req.Meta,
+		Title:         req.GetTitle(),
+		DataEncrypted: req.GetData(),
+		Meta:          req.GetMeta(),
 	}
 
 	err = s.textDataCreateUsecase.Execute(ctx, userID, textData)
@@ -351,9 +326,9 @@ func (s *Server) GetTextData(ctx context.Context, req *proto.GetRequest) (*proto
 		return nil, err
 	}
 
-	s.logger.Info("GetTextData request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("GetTextData request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	textData, err := s.textDataGetUsecase.Execute(ctx, userID, req.Id)
+	textData, err := s.textDataGetUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("GetTextData failed", zap.Error(err))
 		if errors.Is(err, model.ErrTextDataNotFound) {
@@ -371,21 +346,14 @@ func (s *Server) UpdateTextData(ctx context.Context, req *proto.UpdateTextDataRe
 		return nil, err
 	}
 
-	s.logger.Info("UpdateTextData request", zap.String("user_id", userID), zap.String("id", req.Id))
-
-	// Encrypt data
-	encryptedData, err := s.encryptor.Encrypt([]byte(req.Data))
-	if err != nil {
-		s.logger.Error("Failed to encrypt text data", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt text data")
-	}
+	s.logger.Info("UpdateTextData request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
 	textData := &model.TextData{
-		ID:            req.Id,
-		Title:         req.Title,
-		DataEncrypted: encryptedData,
-		Meta:          req.Meta,
-		Version:       int32(req.Version),
+		ID:            req.GetId(),
+		Title:         req.GetTitle(),
+		DataEncrypted: req.GetData(),
+		Meta:          req.GetMeta(),
+		Version:       req.GetVersion(),
 	}
 
 	err = s.textDataUpdateUsecase.Execute(ctx, userID, textData)
@@ -406,15 +374,15 @@ func (s *Server) UpdateTextData(ctx context.Context, req *proto.UpdateTextDataRe
 	return s.textDataToProto(textData)
 }
 
-func (s *Server) DeleteTextData(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
+func (s *Server) DeleteTextData(ctx context.Context, req *proto.DeleteRequest) (*proto.DeleteResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	s.logger.Info("DeleteTextData request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("DeleteTextData request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	err = s.textDataDeleteUsecase.Execute(ctx, userID, req.Id)
+	err = s.textDataDeleteUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("DeleteTextData failed", zap.Error(err))
 		if errors.Is(err, model.ErrTextDataNotFound) {
@@ -426,10 +394,10 @@ func (s *Server) DeleteTextData(ctx context.Context, req *proto.DeleteRequest) (
 		return nil, status.Error(codes.Internal, "failed to delete text data")
 	}
 
-	return &emptypb.Empty{}, nil
+	return proto.DeleteResponse_builder{}.Build(), nil
 }
 
-func (s *Server) ListTextData(ctx context.Context, _ *emptypb.Empty) (*proto.TextDataListResponse, error) {
+func (s *Server) ListTextData(ctx context.Context, _ *proto.ListTextDataRequest) (*proto.TextDataListResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
@@ -453,9 +421,9 @@ func (s *Server) ListTextData(ctx context.Context, _ *emptypb.Empty) (*proto.Tex
 		protoTextData[i] = protoTD
 	}
 
-	return &proto.TextDataListResponse{
+	return proto.TextDataListResponse_builder{
 		TextData: protoTextData,
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) CreateBinaryData(ctx context.Context, req *proto.BinaryDataRequest) (*proto.BinaryDataResponse, error) {
@@ -464,19 +432,12 @@ func (s *Server) CreateBinaryData(ctx context.Context, req *proto.BinaryDataRequ
 		return nil, err
 	}
 
-	s.logger.Info("CreateBinaryData request", zap.String("user_id", userID), zap.String("title", req.Title))
-
-	// Encrypt data
-	encryptedData, err := s.encryptor.EncryptBytes(req.Data)
-	if err != nil {
-		s.logger.Error("Failed to encrypt binary data", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt binary data")
-	}
+	s.logger.Info("CreateBinaryData request", zap.String("user_id", userID), zap.String("title", req.GetTitle()))
 
 	binaryData := &model.BinaryData{
-		Title:         req.Title,
-		DataEncrypted: encryptedData,
-		Meta:          req.Meta,
+		Title:         req.GetTitle(),
+		DataEncrypted: req.GetData(),
+		Meta:          req.GetMeta(),
 	}
 
 	err = s.binaryDataCreateUsecase.Execute(ctx, userID, binaryData)
@@ -497,9 +458,9 @@ func (s *Server) GetBinaryData(ctx context.Context, req *proto.GetRequest) (*pro
 		return nil, err
 	}
 
-	s.logger.Info("GetBinaryData request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("GetBinaryData request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	binaryData, err := s.binaryDataGetUsecase.Execute(ctx, userID, req.Id)
+	binaryData, err := s.binaryDataGetUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("GetBinaryData failed", zap.Error(err))
 		if errors.Is(err, model.ErrBinaryDataNotFound) {
@@ -517,21 +478,14 @@ func (s *Server) UpdateBinaryData(ctx context.Context, req *proto.UpdateBinaryDa
 		return nil, err
 	}
 
-	s.logger.Info("UpdateBinaryData request", zap.String("user_id", userID), zap.String("id", req.Id))
-
-	// Encrypt data
-	encryptedData, err := s.encryptor.EncryptBytes(req.Data)
-	if err != nil {
-		s.logger.Error("Failed to encrypt binary data", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt binary data")
-	}
+	s.logger.Info("UpdateBinaryData request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
 	binaryData := &model.BinaryData{
-		ID:            req.Id,
-		Title:         req.Title,
-		DataEncrypted: encryptedData,
-		Meta:          req.Meta,
-		Version:       int32(req.Version),
+		ID:            req.GetId(),
+		Title:         req.GetTitle(),
+		DataEncrypted: req.GetData(),
+		Meta:          req.GetMeta(),
+		Version:       req.GetVersion(),
 	}
 
 	err = s.binaryDataUpdateUsecase.Execute(ctx, userID, binaryData)
@@ -555,15 +509,15 @@ func (s *Server) UpdateBinaryData(ctx context.Context, req *proto.UpdateBinaryDa
 	return s.binaryDataToProto(binaryData)
 }
 
-func (s *Server) DeleteBinaryData(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
+func (s *Server) DeleteBinaryData(ctx context.Context, req *proto.DeleteRequest) (*proto.DeleteResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	s.logger.Info("DeleteBinaryData request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("DeleteBinaryData request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	err = s.binaryDataDeleteUsecase.Execute(ctx, userID, req.Id)
+	err = s.binaryDataDeleteUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("DeleteBinaryData failed", zap.Error(err))
 		if errors.Is(err, model.ErrBinaryDataNotFound) {
@@ -575,10 +529,10 @@ func (s *Server) DeleteBinaryData(ctx context.Context, req *proto.DeleteRequest)
 		return nil, status.Error(codes.Internal, "failed to delete binary data")
 	}
 
-	return &emptypb.Empty{}, nil
+	return proto.DeleteResponse_builder{}.Build(), nil
 }
 
-func (s *Server) ListBinaryData(ctx context.Context, _ *emptypb.Empty) (*proto.BinaryDataListResponse, error) {
+func (s *Server) ListBinaryData(ctx context.Context, _ *proto.ListBinaryDataRequest) (*proto.BinaryDataListResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
@@ -602,9 +556,9 @@ func (s *Server) ListBinaryData(ctx context.Context, _ *emptypb.Empty) (*proto.B
 		protoBinaryData[i] = protoBD
 	}
 
-	return &proto.BinaryDataListResponse{
+	return proto.BinaryDataListResponse_builder{
 		BinaryData: protoBinaryData,
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) CreateCard(ctx context.Context, req *proto.CardRequest) (*proto.CardResponse, error) {
@@ -613,40 +567,15 @@ func (s *Server) CreateCard(ctx context.Context, req *proto.CardRequest) (*proto
 		return nil, err
 	}
 
-	s.logger.Info("CreateCard request", zap.String("user_id", userID), zap.String("title", req.Title))
-
-	// Encrypt card data
-	encryptedCardNumber, err := s.encryptor.Encrypt([]byte(req.CardNumber))
-	if err != nil {
-		s.logger.Error("Failed to encrypt card number", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt card number")
-	}
-
-	encryptedCardHolder, err := s.encryptor.Encrypt([]byte(req.CardHolder))
-	if err != nil {
-		s.logger.Error("Failed to encrypt card holder", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt card holder")
-	}
-
-	encryptedExpiry, err := s.encryptor.Encrypt([]byte(req.Expiry))
-	if err != nil {
-		s.logger.Error("Failed to encrypt expiry", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt expiry")
-	}
-
-	encryptedCVV, err := s.encryptor.Encrypt([]byte(req.Cvv))
-	if err != nil {
-		s.logger.Error("Failed to encrypt CVV", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt CVV")
-	}
+	s.logger.Info("CreateCard request", zap.String("user_id", userID), zap.String("title", req.GetTitle()))
 
 	card := &model.Card{
-		Title:               req.Title,
-		CardNumberEncrypted: encryptedCardNumber,
-		CardHolderEncrypted: encryptedCardHolder,
-		ExpiryEncrypted:     encryptedExpiry,
-		CVVEncrypted:        encryptedCVV,
-		Meta:                req.Meta,
+		Title:               req.GetTitle(),
+		CardNumberEncrypted: req.GetCardNumber(),
+		CardHolderEncrypted: req.GetCardHolder(),
+		ExpiryEncrypted:     req.GetExpiry(),
+		CVVEncrypted:        req.GetCvv(),
+		Meta:                req.GetMeta(),
 	}
 
 	err = s.cardCreateUsecase.Execute(ctx, userID, card)
@@ -664,9 +593,9 @@ func (s *Server) GetCard(ctx context.Context, req *proto.GetRequest) (*proto.Car
 		return nil, err
 	}
 
-	s.logger.Info("GetCard request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("GetCard request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	card, err := s.cardGetUsecase.Execute(ctx, userID, req.Id)
+	card, err := s.cardGetUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("GetCard failed", zap.Error(err))
 		if errors.Is(err, model.ErrCardNotFound) {
@@ -684,42 +613,17 @@ func (s *Server) UpdateCard(ctx context.Context, req *proto.UpdateCardRequest) (
 		return nil, err
 	}
 
-	s.logger.Info("UpdateCard request", zap.String("user_id", userID), zap.String("id", req.Id))
-
-	// Encrypt card data
-	encryptedCardNumber, err := s.encryptor.Encrypt([]byte(req.CardNumber))
-	if err != nil {
-		s.logger.Error("Failed to encrypt card number", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt card number")
-	}
-
-	encryptedCardHolder, err := s.encryptor.Encrypt([]byte(req.CardHolder))
-	if err != nil {
-		s.logger.Error("Failed to encrypt card holder", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt card holder")
-	}
-
-	encryptedExpiry, err := s.encryptor.Encrypt([]byte(req.Expiry))
-	if err != nil {
-		s.logger.Error("Failed to encrypt expiry", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt expiry")
-	}
-
-	encryptedCVV, err := s.encryptor.Encrypt([]byte(req.Cvv))
-	if err != nil {
-		s.logger.Error("Failed to encrypt CVV", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to encrypt CVV")
-	}
+	s.logger.Info("UpdateCard request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
 	card := &model.Card{
-		ID:                  req.Id,
-		Title:               req.Title,
-		CardNumberEncrypted: encryptedCardNumber,
-		CardHolderEncrypted: encryptedCardHolder,
-		ExpiryEncrypted:     encryptedExpiry,
-		CVVEncrypted:        encryptedCVV,
-		Meta:                req.Meta,
-		Version:             int32(req.Version),
+		ID:                  req.GetId(),
+		Title:               req.GetTitle(),
+		CardNumberEncrypted: req.GetCardNumber(),
+		CardHolderEncrypted: req.GetCardHolder(),
+		ExpiryEncrypted:     req.GetExpiry(),
+		CVVEncrypted:        req.GetCvv(),
+		Meta:                req.GetMeta(),
+		Version:             req.GetVersion(),
 	}
 
 	err = s.cardUpdateUsecase.Execute(ctx, userID, card)
@@ -740,15 +644,15 @@ func (s *Server) UpdateCard(ctx context.Context, req *proto.UpdateCardRequest) (
 	return s.cardToProto(card)
 }
 
-func (s *Server) DeleteCard(ctx context.Context, req *proto.DeleteRequest) (*emptypb.Empty, error) {
+func (s *Server) DeleteCard(ctx context.Context, req *proto.DeleteRequest) (*proto.DeleteResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	s.logger.Info("DeleteCard request", zap.String("user_id", userID), zap.String("id", req.Id))
+	s.logger.Info("DeleteCard request", zap.String("user_id", userID), zap.String("id", req.GetId()))
 
-	err = s.cardDeleteUsecase.Execute(ctx, userID, req.Id)
+	err = s.cardDeleteUsecase.Execute(ctx, userID, req.GetId())
 	if err != nil {
 		s.logger.Error("DeleteCard failed", zap.Error(err))
 		if errors.Is(err, model.ErrCardNotFound) {
@@ -760,10 +664,10 @@ func (s *Server) DeleteCard(ctx context.Context, req *proto.DeleteRequest) (*emp
 		return nil, status.Error(codes.Internal, "failed to delete card")
 	}
 
-	return &emptypb.Empty{}, nil
+	return proto.DeleteResponse_builder{}.Build(), nil
 }
 
-func (s *Server) ListCards(ctx context.Context, _ *emptypb.Empty) (*proto.CardsListResponse, error) {
+func (s *Server) ListCards(ctx context.Context, _ *proto.ListCardsRequest) (*proto.CardsListResponse, error) {
 	userID, err := s.extractUserID(ctx)
 	if err != nil {
 		return nil, err
@@ -787,9 +691,9 @@ func (s *Server) ListCards(ctx context.Context, _ *emptypb.Empty) (*proto.CardsL
 		protoCards[i] = protoCard
 	}
 
-	return &proto.CardsListResponse{
+	return proto.CardsListResponse_builder{
 		Cards: protoCards,
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) Sync(ctx context.Context, req *proto.SyncRequest) (*proto.SyncResponse, error) {
@@ -846,13 +750,13 @@ func (s *Server) Sync(ctx context.Context, req *proto.SyncRequest) (*proto.SyncR
 		cards[i] = protoCard
 	}
 
-	return &proto.SyncResponse{
+	return proto.SyncResponse_builder{
 		Credentials: credentials,
 		TextData:    textData,
 		BinaryData:  binaryData,
 		Cards:       cards,
 		ServerTime:  timestamppb.New(resp.LastSync),
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) extractUserID(ctx context.Context) (string, error) {
@@ -880,99 +784,57 @@ func (s *Server) extractUserID(ctx context.Context) (string, error) {
 }
 
 func (s *Server) credentialToProto(cred *model.Credential) (*proto.CredentialResponse, error) {
-	// Decrypt password
-	decryptedPassword, err := s.encryptor.Decrypt(cred.PasswordEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt password", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt password")
-	}
-
-	return &proto.CredentialResponse{
-		Id:        cred.ID,
-		Title:     cred.Title,
-		Login:     cred.Login,
-		Password:  string(decryptedPassword),
-		Meta:      cred.Meta,
-		Version:   int32(cred.Version),
+	version := int32(cred.Version)
+	return proto.CredentialResponse_builder{
+		Id:        protobuf.String(cred.ID),
+		Title:     protobuf.String(cred.Title),
+		Login:     protobuf.String(cred.Login),
+		Password:  protobuf.String(cred.PasswordEncrypted),
+		Meta:      protobuf.String(cred.Meta),
+		Version:   protobuf.Int32(version),
 		CreatedAt: timestamppb.New(cred.CreatedAt),
 		UpdatedAt: timestamppb.New(cred.UpdatedAt),
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) textDataToProto(td *model.TextData) (*proto.TextDataResponse, error) {
-	// Decrypt data
-	decryptedData, err := s.encryptor.Decrypt(td.DataEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt text data", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt text data")
-	}
-
-	return &proto.TextDataResponse{
-		Id:        td.ID,
-		Title:     td.Title,
-		Data:      string(decryptedData),
-		Meta:      td.Meta,
-		Version:   int32(td.Version),
+	version := int32(td.Version)
+	return proto.TextDataResponse_builder{
+		Id:        protobuf.String(td.ID),
+		Title:     protobuf.String(td.Title),
+		Data:      protobuf.String(td.DataEncrypted),
+		Meta:      protobuf.String(td.Meta),
+		Version:   protobuf.Int32(version),
 		CreatedAt: timestamppb.New(td.CreatedAt),
 		UpdatedAt: timestamppb.New(td.UpdatedAt),
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) binaryDataToProto(bd *model.BinaryData) (*proto.BinaryDataResponse, error) {
-	// Decrypt data
-	decryptedData, err := s.encryptor.DecryptBytes(bd.DataEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt binary data", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt binary data")
-	}
-
-	return &proto.BinaryDataResponse{
-		Id:        bd.ID,
-		Title:     bd.Title,
-		Data:      decryptedData,
-		Meta:      bd.Meta,
-		Version:   int32(bd.Version),
+	version := int32(bd.Version)
+	return proto.BinaryDataResponse_builder{
+		Id:        protobuf.String(bd.ID),
+		Title:     protobuf.String(bd.Title),
+		Data:      bd.DataEncrypted,
+		Meta:      protobuf.String(bd.Meta),
+		Version:   protobuf.Int32(version),
 		CreatedAt: timestamppb.New(bd.CreatedAt),
 		UpdatedAt: timestamppb.New(bd.UpdatedAt),
-	}, nil
+	}.Build(), nil
 }
 
 func (s *Server) cardToProto(card *model.Card) (*proto.CardResponse, error) {
-	// Decrypt card data
-	decryptedCardNumber, err := s.encryptor.Decrypt(card.CardNumberEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt card number", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt card number")
-	}
-
-	decryptedCardHolder, err := s.encryptor.Decrypt(card.CardHolderEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt card holder", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt card holder")
-	}
-
-	decryptedExpiry, err := s.encryptor.Decrypt(card.ExpiryEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt expiry", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt expiry")
-	}
-
-	decryptedCVV, err := s.encryptor.Decrypt(card.CVVEncrypted)
-	if err != nil {
-		s.logger.Error("Failed to decrypt CVV", zap.Error(err))
-		return nil, status.Error(codes.Internal, "failed to decrypt CVV")
-	}
-
-	return &proto.CardResponse{
-		Id:         card.ID,
-		Title:      card.Title,
-		CardNumber: string(decryptedCardNumber),
-		CardHolder: string(decryptedCardHolder),
-		Expiry:     string(decryptedExpiry),
-		Cvv:        string(decryptedCVV),
-		Meta:       card.Meta,
-		Version:    int32(card.Version),
+	version := int32(card.Version)
+	return proto.CardResponse_builder{
+		Id:         protobuf.String(card.ID),
+		Title:      protobuf.String(card.Title),
+		CardNumber: protobuf.String(card.CardNumberEncrypted),
+		CardHolder: protobuf.String(card.CardHolderEncrypted),
+		Expiry:     protobuf.String(card.ExpiryEncrypted),
+		Cvv:        protobuf.String(card.CVVEncrypted),
+		Meta:       protobuf.String(card.Meta),
+		Version:    protobuf.Int32(version),
 		CreatedAt:  timestamppb.New(card.CreatedAt),
 		UpdatedAt:  timestamppb.New(card.UpdatedAt),
-	}, nil
+	}.Build(), nil
 }

@@ -253,7 +253,7 @@ func handleCreateCredential(ctx context.Context, cli *client.Client, args []stri
 		os.Exit(1)
 	}
 
-	fmt.Printf("Credential created with ID: %s\n", cred.Id)
+	fmt.Printf("Credential created with ID: %s\n", cred.GetId())
 }
 
 func handleUpdateCredential(ctx context.Context, cli *client.Client, args []string) {
@@ -277,7 +277,7 @@ func handleUpdateCredential(ctx context.Context, cli *client.Client, args []stri
 		os.Exit(1)
 	}
 
-	fmt.Printf("Credential updated: %s\n", cred.Id)
+	fmt.Printf("Credential updated: %s\n", cred.GetId())
 }
 
 func handleDeleteCredential(ctx context.Context, cli *client.Client, args []string) {
@@ -310,7 +310,7 @@ func handleListCredentials(ctx context.Context, cli *client.Client) {
 
 	fmt.Println("Credentials:")
 	for _, cred := range creds {
-		fmt.Printf("  ID: %s, Title: %s, Login: %s\n", cred.Id, cred.Title, cred.Login)
+		fmt.Printf("  ID: %s, Title: %s, Login: %s\n", cred.GetId(), cred.GetTitle(), cred.GetLogin())
 	}
 }
 
@@ -362,7 +362,7 @@ func handleCreateText(ctx context.Context, cli *client.Client, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Text data created with ID: %s\n", text.Id)
+	fmt.Printf("Text data created with ID: %s\n", text.GetId())
 }
 
 func handleUpdateText(ctx context.Context, cli *client.Client, args []string) {
@@ -385,7 +385,7 @@ func handleUpdateText(ctx context.Context, cli *client.Client, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Text data updated: %s\n", text.Id)
+	fmt.Printf("Text data updated: %s\n", text.GetId())
 }
 
 func handleDeleteText(ctx context.Context, cli *client.Client, args []string) {
@@ -418,7 +418,7 @@ func handleListText(ctx context.Context, cli *client.Client) {
 
 	fmt.Println("Text Data:")
 	for _, text := range texts {
-		fmt.Printf("  ID: %s, Title: %s\n", text.Id, text.Title)
+		fmt.Printf("  ID: %s, Title: %s\n", text.GetId(), text.GetTitle())
 	}
 }
 
@@ -476,7 +476,7 @@ func handleCreateBinary(ctx context.Context, cli *client.Client, args []string) 
 		os.Exit(1)
 	}
 
-	fmt.Printf("Binary data created with ID: %s\n", binary.Id)
+	fmt.Printf("Binary data created with ID: %s\n", binary.GetId())
 }
 
 func handleUpdateBinary(ctx context.Context, cli *client.Client, args []string) {
@@ -505,7 +505,7 @@ func handleUpdateBinary(ctx context.Context, cli *client.Client, args []string) 
 		os.Exit(1)
 	}
 
-	fmt.Printf("Binary data updated: %s\n", binary.Id)
+	fmt.Printf("Binary data updated: %s\n", binary.GetId())
 }
 
 func handleDeleteBinary(ctx context.Context, cli *client.Client, args []string) {
@@ -538,7 +538,7 @@ func handleListBinary(ctx context.Context, cli *client.Client) {
 
 	fmt.Println("Binary Data:")
 	for _, binary := range binaries {
-		fmt.Printf("  ID: %s, Title: %s, Size: %d bytes\n", binary.Id, binary.Title, len(binary.Data))
+		fmt.Printf("  ID: %s, Title: %s, Size: %d bytes\n", binary.GetId(), binary.GetTitle(), len(binary.GetData()))
 	}
 }
 
@@ -593,7 +593,7 @@ func handleCreateCard(ctx context.Context, cli *client.Client, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Card created with ID: %s\n", card.Id)
+	fmt.Printf("Card created with ID: %s\n", card.GetId())
 }
 
 func handleUpdateCard(ctx context.Context, cli *client.Client, args []string) {
@@ -619,7 +619,7 @@ func handleUpdateCard(ctx context.Context, cli *client.Client, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Card updated: %s\n", card.Id)
+	fmt.Printf("Card updated: %s\n", card.GetId())
 }
 
 func handleDeleteCard(ctx context.Context, cli *client.Client, args []string) {
@@ -653,12 +653,13 @@ func handleListCards(ctx context.Context, cli *client.Client) {
 	fmt.Println("Cards:")
 	for _, card := range cards {
 		var maskedNumber string
-		if len(card.CardNumber) >= 4 {
-			maskedNumber = "****" + card.CardNumber[len(card.CardNumber)-4:]
+		cardNumber := card.GetCardNumber()
+		if len(cardNumber) >= 4 {
+			maskedNumber = "****" + cardNumber[len(cardNumber)-4:]
 		} else {
-			maskedNumber = card.CardNumber
+			maskedNumber = cardNumber
 		}
-		fmt.Printf("  ID: %s, Title: %s, Card Number: %s\n", card.Id, card.Title, maskedNumber)
+		fmt.Printf("  ID: %s, Title: %s, Card Number: %s\n", card.GetId(), card.GetTitle(), maskedNumber)
 	}
 }
 
@@ -669,11 +670,11 @@ func handleSync(ctx context.Context, cli *client.Client, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Sync completed at: %s\n", resp.ServerTime.AsTime().Format("2006-01-02 15:04:05"))
-	fmt.Printf("Credentials: %d\n", len(resp.Credentials))
-	fmt.Printf("Text Data: %d\n", len(resp.TextData))
-	fmt.Printf("Binary Data: %d\n", len(resp.BinaryData))
-	fmt.Printf("Cards: %d\n", len(resp.Cards))
+	fmt.Printf("Sync completed at: %s\n", resp.GetServerTime().AsTime().Format("2006-01-02 15:04:05"))
+	fmt.Printf("Credentials: %d\n", len(resp.GetCredentials()))
+	fmt.Printf("Text Data: %d\n", len(resp.GetTextData()))
+	fmt.Printf("Binary Data: %d\n", len(resp.GetBinaryData()))
+	fmt.Printf("Cards: %d\n", len(resp.GetCards()))
 }
 
 func printVersion() {

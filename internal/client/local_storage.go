@@ -98,11 +98,11 @@ func (s *LocalStorage) UpdateFromSync(syncResp *proto.SyncResponse) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.data.Credentials = syncResp.Credentials
-	s.data.TextData = syncResp.TextData
-	s.data.BinaryData = syncResp.BinaryData
-	s.data.Cards = syncResp.Cards
-	s.data.LastSync = syncResp.ServerTime.AsTime()
+	s.data.Credentials = syncResp.GetCredentials()
+	s.data.TextData = syncResp.GetTextData()
+	s.data.BinaryData = syncResp.GetBinaryData()
+	s.data.Cards = syncResp.GetCards()
+	s.data.LastSync = syncResp.GetServerTime().AsTime()
 
 	return s.save()
 }
@@ -163,7 +163,7 @@ func (s *LocalStorage) AddCredential(cred *proto.CredentialResponse) error {
 
 	// Remove existing credential with same ID if exists
 	for i, existing := range s.data.Credentials {
-		if existing.Id == cred.Id {
+		if existing.GetId() == cred.GetId() {
 			s.data.Credentials = append(s.data.Credentials[:i], s.data.Credentials[i+1:]...)
 			break
 		}
@@ -179,7 +179,7 @@ func (s *LocalStorage) AddTextData(text *proto.TextDataResponse) error {
 
 	// Remove existing text data with same ID if exists
 	for i, existing := range s.data.TextData {
-		if existing.Id == text.Id {
+		if existing.GetId() == text.GetId() {
 			s.data.TextData = append(s.data.TextData[:i], s.data.TextData[i+1:]...)
 			break
 		}
@@ -195,7 +195,7 @@ func (s *LocalStorage) AddBinaryData(binary *proto.BinaryDataResponse) error {
 
 	// Remove existing binary data with same ID if exists
 	for i, existing := range s.data.BinaryData {
-		if existing.Id == binary.Id {
+		if existing.GetId() == binary.GetId() {
 			s.data.BinaryData = append(s.data.BinaryData[:i], s.data.BinaryData[i+1:]...)
 			break
 		}
@@ -211,7 +211,7 @@ func (s *LocalStorage) AddCard(card *proto.CardResponse) error {
 
 	// Remove existing card with same ID if exists
 	for i, existing := range s.data.Cards {
-		if existing.Id == card.Id {
+		if existing.GetId() == card.GetId() {
 			s.data.Cards = append(s.data.Cards[:i], s.data.Cards[i+1:]...)
 			break
 		}
@@ -226,7 +226,7 @@ func (s *LocalStorage) RemoveCredential(id string) error {
 	defer s.mu.Unlock()
 
 	for i, cred := range s.data.Credentials {
-		if cred.Id == id {
+		if cred.GetId() == id {
 			s.data.Credentials = append(s.data.Credentials[:i], s.data.Credentials[i+1:]...)
 			return s.save()
 		}
@@ -240,7 +240,7 @@ func (s *LocalStorage) RemoveTextData(id string) error {
 	defer s.mu.Unlock()
 
 	for i, text := range s.data.TextData {
-		if text.Id == id {
+		if text.GetId() == id {
 			s.data.TextData = append(s.data.TextData[:i], s.data.TextData[i+1:]...)
 			return s.save()
 		}
@@ -254,7 +254,7 @@ func (s *LocalStorage) RemoveBinaryData(id string) error {
 	defer s.mu.Unlock()
 
 	for i, binary := range s.data.BinaryData {
-		if binary.Id == id {
+		if binary.GetId() == id {
 			s.data.BinaryData = append(s.data.BinaryData[:i], s.data.BinaryData[i+1:]...)
 			return s.save()
 		}
@@ -268,7 +268,7 @@ func (s *LocalStorage) RemoveCard(id string) error {
 	defer s.mu.Unlock()
 
 	for i, card := range s.data.Cards {
-		if card.Id == id {
+		if card.GetId() == id {
 			s.data.Cards = append(s.data.Cards[:i], s.data.Cards[i+1:]...)
 			return s.save()
 		}
@@ -282,7 +282,7 @@ func (s *LocalStorage) GetCredential(id string) *proto.CredentialResponse {
 	defer s.mu.RUnlock()
 
 	for _, cred := range s.data.Credentials {
-		if cred.Id == id {
+		if cred.GetId() == id {
 			return cred
 		}
 	}
@@ -295,7 +295,7 @@ func (s *LocalStorage) GetTextDataById(id string) *proto.TextDataResponse {
 	defer s.mu.RUnlock()
 
 	for _, text := range s.data.TextData {
-		if text.Id == id {
+		if text.GetId() == id {
 			return text
 		}
 	}
@@ -308,7 +308,7 @@ func (s *LocalStorage) GetBinaryDataById(id string) *proto.BinaryDataResponse {
 	defer s.mu.RUnlock()
 
 	for _, binary := range s.data.BinaryData {
-		if binary.Id == id {
+		if binary.GetId() == id {
 			return binary
 		}
 	}
@@ -321,7 +321,7 @@ func (s *LocalStorage) GetCard(id string) *proto.CardResponse {
 	defer s.mu.RUnlock()
 
 	for _, card := range s.data.Cards {
-		if card.Id == id {
+		if card.GetId() == id {
 			return card
 		}
 	}

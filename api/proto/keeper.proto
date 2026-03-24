@@ -1,11 +1,13 @@
-syntax = "proto3";
+edition = "2024";
 
 package keeper;
 
 option go_package = "github.com/a-blokhin/goph-keeper/api/proto";
 
+import "google/protobuf/go_features.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
 
 service KeeperService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
@@ -14,26 +16,26 @@ service KeeperService {
   rpc CreateCredential(CredentialRequest) returns (CredentialResponse);
   rpc GetCredential(GetRequest) returns (CredentialResponse);
   rpc UpdateCredential(UpdateCredentialRequest) returns (CredentialResponse);
-  rpc DeleteCredential(DeleteRequest) returns (google.protobuf.Empty);
-  rpc ListCredentials(google.protobuf.Empty) returns (CredentialsListResponse);
+  rpc DeleteCredential(DeleteRequest) returns (DeleteResponse);
+  rpc ListCredentials(ListCredentialsRequest) returns (CredentialsListResponse);
   
   rpc CreateTextData(TextDataRequest) returns (TextDataResponse);
   rpc GetTextData(GetRequest) returns (TextDataResponse);
   rpc UpdateTextData(UpdateTextDataRequest) returns (TextDataResponse);
-  rpc DeleteTextData(DeleteRequest) returns (google.protobuf.Empty);
-  rpc ListTextData(google.protobuf.Empty) returns (TextDataListResponse);
+  rpc DeleteTextData(DeleteRequest) returns (DeleteResponse);
+  rpc ListTextData(ListTextDataRequest) returns (TextDataListResponse);
   
   rpc CreateBinaryData(BinaryDataRequest) returns (BinaryDataResponse);
   rpc GetBinaryData(GetRequest) returns (BinaryDataResponse);
   rpc UpdateBinaryData(UpdateBinaryDataRequest) returns (BinaryDataResponse);
-  rpc DeleteBinaryData(DeleteRequest) returns (google.protobuf.Empty);
-  rpc ListBinaryData(google.protobuf.Empty) returns (BinaryDataListResponse);
+  rpc DeleteBinaryData(DeleteRequest) returns (DeleteResponse);
+  rpc ListBinaryData(ListBinaryDataRequest) returns (BinaryDataListResponse);
   
   rpc CreateCard(CardRequest) returns (CardResponse);
   rpc GetCard(GetRequest) returns (CardResponse);
   rpc UpdateCard(UpdateCardRequest) returns (CardResponse);
-  rpc DeleteCard(DeleteRequest) returns (google.protobuf.Empty);
-  rpc ListCards(google.protobuf.Empty) returns (CardsListResponse);
+  rpc DeleteCard(DeleteRequest) returns (DeleteResponse);
+  rpc ListCards(ListCardsRequest) returns (CardsListResponse);
   
   rpc Sync(SyncRequest) returns (SyncResponse);
 }
@@ -186,6 +188,21 @@ message GetRequest {
 
 message DeleteRequest {
   string id = 1;
+}
+
+message DeleteResponse {
+}
+
+message ListCredentialsRequest {
+}
+
+message ListTextDataRequest {
+}
+
+message ListBinaryDataRequest {
+}
+
+message ListCardsRequest {
 }
 
 message SyncRequest {

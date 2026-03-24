@@ -5,15 +5,18 @@ import (
 
 	"github.com/a-blokhin/goph-keeper/internal/model"
 	"github.com/a-blokhin/goph-keeper/internal/repository"
+	"github.com/a-blokhin/goph-keeper/internal/service/encryption"
 )
 
 type getCardUsecase struct {
-	cardRepo repository.CardRepository
+	cardRepo          repository.CardRepository
+	encryptionService encryption.EncryptionService
 }
 
-func New(cardRepo repository.CardRepository) GetCardUsecase {
+func New(cardRepo repository.CardRepository, encryptionService encryption.EncryptionService) GetCardUsecase {
 	return &getCardUsecase{
-		cardRepo: cardRepo,
+		cardRepo:          cardRepo,
+		encryptionService: encryptionService,
 	}
 }
 
@@ -25,6 +28,10 @@ func (u *getCardUsecase) Execute(ctx context.Context, userID, id string) (*model
 
 	if card.UserID != userID {
 		return nil, model.ErrCardNotFound
+	}
+
+	if err := u.encryptionService.DecryptCardData(card); err != nil {
+		return nil, err
 	}
 
 	return card, nil

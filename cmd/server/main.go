@@ -17,12 +17,13 @@ import (
 )
 
 var (
-	addr          = flag.String("addr", ":50051", "The server address")
-	dsn           = flag.String("dsn", "", "Database connection string (required)")
-	jwtSecret     = flag.String("jwt-secret", "", "JWT secret key (required)")
-	encryptionKey = flag.String("encryption-key", "", "32-byte encryption key for AES-GCM (required)")
-	tlsCert       = flag.String("tls-cert", "", "TLS certificate file path")
-	tlsKey        = flag.String("tls-key", "", "TLS key file path")
+	addr           = flag.String("addr", ":50051", "The server address")
+	dsn            = flag.String("dsn", "", "Database connection string (required)")
+	jwtSecret      = flag.String("jwt-secret", "", "JWT secret key (required)")
+	encryptionKey  = flag.String("encryption-key", "", "32-byte encryption key for AES-GCM (required)")
+	tlsCert        = flag.String("tls-cert", "", "TLS certificate file path")
+	tlsKey         = flag.String("tls-key", "", "TLS key file path")
+	migrationsPath = flag.String("migrations-path", "./migrations", "Path to migrations directory")
 )
 
 func main() {
@@ -45,6 +46,9 @@ func main() {
 	}
 	if envKey := os.Getenv("TLS_KEY"); envKey != "" {
 		*tlsKey = envKey
+	}
+	if envMigrationsPath := os.Getenv("MIGRATIONS_PATH"); envMigrationsPath != "" {
+		*migrationsPath = envMigrationsPath
 	}
 
 	if *dsn == "" {
@@ -72,7 +76,7 @@ func main() {
 
 	ctx := context.Background()
 
-	container, err := app.NewContainer(ctx, logger, *dsn, *jwtSecret, *encryptionKey)
+	container, err := app.NewContainer(ctx, logger, *dsn, *jwtSecret, *encryptionKey, *migrationsPath)
 	if err != nil {
 		logger.Fatal("Failed to create container", zap.Error(err))
 	}

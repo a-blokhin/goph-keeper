@@ -10,6 +10,7 @@ import (
 	"github.com/a-blokhin/goph-keeper/internal/repository"
 	"github.com/a-blokhin/goph-keeper/internal/repository/postgres"
 	"github.com/a-blokhin/goph-keeper/internal/server/grpc"
+	"github.com/a-blokhin/goph-keeper/internal/service/encryption"
 	"github.com/a-blokhin/goph-keeper/internal/usecase/auth/login"
 	"github.com/a-blokhin/goph-keeper/internal/usecase/auth/register"
 	binaryDataCreate "github.com/a-blokhin/goph-keeper/internal/usecase/binarydata/create"
@@ -45,13 +46,13 @@ type Container struct {
 	Server     *grpc.Server
 }
 
-func NewContainer(ctx context.Context, logger *zap.Logger, dsn string, jwtSecret string, encryptionKey string) (*Container, error) {
+func NewContainer(ctx context.Context, logger *zap.Logger, dsn string, jwtSecret string, encryptionKey string, migrationsPath string) (*Container, error) {
 	dbPool, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create database pool: %w", err)
 	}
 
-	migrator := migration.New(logger, "./migrations")
+	migrator := migration.New(logger, migrationsPath)
 	if err := migrator.Up(dsn); err != nil {
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
@@ -64,8 +65,9 @@ func NewContainer(ctx context.Context, logger *zap.Logger, dsn string, jwtSecret
 	}
 
 	repos := initRepositories(dbPool)
-	usecases := initUsecases(repos, jwtManager, logger)
-	server := initServer(logger, jwtManager, encryptor, usecases)
+	var encryptionService encryption.EncryptionService = encryption.NewEncryptionService(encryptor)
+	usecases := initUsecases(repos, jwtManager, encryptionService, logger)
+	server := initServer(logger, jwtManager, usecases)
 
 	return &Container{
 		Logger:     logger,
@@ -126,39 +128,40 @@ type usecases struct {
 	syncUsecase             sync.SyncUsecase
 }
 
-func initUsecases(repos *repositories, jwtManager *jwt.JWTManager, logger *zap.Logger) *usecases {
+func initUsecases(repos *repositories, jwtManager *jwt.JWTManager, encryptionService encryption.EncryptionService, logger *zap.Logger) *usecases {
 	registerUsecase := register.New(repos.userRepo, jwtManager, logger)
 	loginUsecase := login.New(repos.userRepo, jwtManager, logger)
 
-	credentialCreateUsecase := credentialCreate.New(repos.credentialRepo, logger)
-	credentialGetUsecase := credentialGet.New(repos.credentialRepo)
-	credentialUpdateUsecase := credentialUpdate.New(repos.credentialRepo, logger)
+	credentialCreateUsecase := credentialCreate.New(repos.credentialRepo, encryptionService, logger)
+	credentialGetUsecase := credentialGet.New(repos.credentialRepo, encryptionService)
+	credentialUpdateUsecase := credentialUpdate.New(repos.credentialRepo, encryptionService, logger)
 	credentialDeleteUsecase := credentialDelete.New(repos.credentialRepo, logger)
-	credentialListUsecase := credentialList.New(repos.credentialRepo, logger)
+	credentialListUsecase := credentialList.New(repos.credentialRepo, encryptionService, logger)
 
-	textDataCreateUsecase := textDataCreate.New(repos.textDataRepo, logger)
-	textDataGetUsecase := textDataGet.New(repos.textDataRepo)
-	textDataUpdateUsecase := textDataUpdate.New(repos.textDataRepo, logger)
+	textDataCreateUsecase := textDataCreate.New(repos.textDataRepo, encryptionService, logger)
+	textDataGetUsecase := textDataGet.New(repos.textDataRepo, encryptionService)
+	textDataUpdateUsecase := textDataUpdate.New(repos.textDataRepo, encryptionService, logger)
 	textDataDeleteUsecase := textDataDelete.New(repos.textDataRepo, logger)
-	textDataListUsecase := textDataList.New(repos.textDataRepo, logger)
+	textDataListUsecase := textDataList.New(repos.textDataRepo, encryptionService, logger)
 
-	binaryDataCreateUsecase := binaryDataCreate.New(repos.binaryDataRepo, logger)
-	binaryDataGetUsecase := binaryDataGet.New(repos.binaryDataRepo)
-	binaryDataUpdateUsecase := binaryDataUpdate.New(repos.binaryDataRepo, logger)
+	binaryDataCreateUsecase := binaryDataCreate.New(repos.binaryDataRepo, encryptionService, logger)
+	binaryDataGetUsecase := binaryDataGet.New(repos.binaryDataRepo, encryptionService)
+	binaryDataUpdateUsecase := binaryDataUpdate.New(repos.binaryDataRepo, encryptionService, logger)
 	binaryDataDeleteUsecase := binaryDataDelete.New(repos.binaryDataRepo, logger)
-	binaryDataListUsecase := binaryDataList.New(repos.binaryDataRepo, logger)
+	binaryDataListUsecase := binaryDataList.New(repos.binaryDataRepo, encryptionService, logger)
 
-	cardCreateUsecase := cardCreate.New(repos.cardRepo, logger)
-	cardGetUsecase := cardGet.New(repos.cardRepo)
-	cardUpdateUsecase := cardUpdate.New(repos.cardRepo, logger)
+	cardCreateUsecase := cardCreate.New(repos.cardRepo, encryptionService, logger)
+	cardGetUsecase := cardGet.New(repos.cardRepo, encryptionService)
+	cardUpdateUsecase := cardUpdate.New(repos.cardRepo, encryptionService, logger)
 	cardDeleteUsecase := cardDelete.New(repos.cardRepo, logger)
-	cardListUsecase := cardList.New(repos.cardRepo, logger)
+	cardListUsecase := cardList.New(repos.cardRepo, encryptionService, logger)
 
 	syncUsecase := sync.New(
 		repos.credentialRepo,
 		repos.textDataRepo,
 		repos.binaryDataRepo,
 		repos.cardRepo,
+		encryptionService,
 		logger,
 	)
 
@@ -189,11 +192,10 @@ func initUsecases(repos *repositories, jwtManager *jwt.JWTManager, logger *zap.L
 	}
 }
 
-func initServer(logger *zap.Logger, jwtManager *jwt.JWTManager, encryptor *crypto.Encryptor, usecases *usecases) *grpc.Server {
+func initServer(logger *zap.Logger, jwtManager *jwt.JWTManager, usecases *usecases) *grpc.Server {
 	return grpc.NewServer(
 		logger,
 		jwtManager,
-		encryptor,
 		usecases.registerUsecase,
 		usecases.loginUsecase,
 		usecases.credentialCreateUsecase,
