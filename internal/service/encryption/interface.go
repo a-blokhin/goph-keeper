@@ -1,3 +1,5 @@
+//go:generate mockery --name=EncryptionService --output=./mocks --outpkg=mocks --filename=encryption_service_mock.go --with-expecter
+
 package encryption
 
 import (

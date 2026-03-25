@@ -339,6 +339,24 @@ E2E тесты выполняют следующие сценарии:
 - Синхронизация данных
 - Очистка созданных данных после завершения тестов
 
+## Покрытие тестами
+
+Чтобы быстро проверить покрытие тестами:
+
+```bash
+pkgs=$(go list ./internal/... \                                      
+  | grep -vE '(^|/)mocks(/|$)' \
+  | grep -vE '^github\.com/a-blokhin/goph-keeper/internal/di/app$' \
+  | grep -vE '^github\.com/a-blokhin/goph-keeper/internal/migration$' \
+  | grep -vE '^github\.com/a-blokhin/goph-keeper/internal/repository/postgres$' \
+  | paste -sd, -)
+go test ./... -coverpkg="$pkgs" -coverprofile=coverage.out >/dev/null
+go tool cover -func=coverage.out | tail -n 1                 
+
+total:                                                                                  (statements)            82.0%
+
+```
+
 ## Безопасность
 
 - Все пароли хешируются с использованием PBKDF2 с 100,000 итераций

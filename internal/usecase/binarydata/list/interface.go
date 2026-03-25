@@ -1,3 +1,5 @@
+//go:generate mockery --name=ListBinaryDataUsecase --output=./mocks --outpkg=mocks --filename=list_binary_data_usecase_mock.go --with-expecter
+
 package list
 
 import (

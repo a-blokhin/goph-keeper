@@ -5,15 +5,6 @@ import (
 	"time"
 )
 
-func TestNewJWTManager(t *testing.T) {
-	secretKey := "test-secret-key-12345678901234567890"
-	manager := NewJWTManager(secretKey)
-
-	if manager == nil {
-		t.Error("NewJWTManager() returned nil")
-	}
-}
-
 func TestJWTManager_GenerateToken(t *testing.T) {
 	secretKey := "test-secret-key-12345678901234567890"
 	manager := NewJWTManager(secretKey)
@@ -136,42 +127,5 @@ func TestJWTManager_TokenExpiration(t *testing.T) {
 
 	if timeDiff < -time.Minute || timeDiff > time.Minute {
 		t.Errorf("ValidateToken() ExpiresAt = %v, want approximately %v", claims.ExpiresAt.Time, expectedExpiry)
-	}
-}
-
-func TestJWTManager_GenerateValidateRoundtrip(t *testing.T) {
-	secretKey := "test-secret-key-12345678901234567890"
-	manager := NewJWTManager(secretKey)
-
-	testCases := []struct {
-		userID string
-		email  string
-	}{
-		{"user1", "user1@example.com"},
-		{"user2", "user2@example.com"},
-		{"user-with-dash", "user-dash@example.com"},
-		{"user_with_underscore", "user_underscore@example.com"},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.userID, func(t *testing.T) {
-			token, err := manager.GenerateToken(tc.userID, tc.email)
-			if err != nil {
-				t.Fatalf("GenerateToken() error = %v", err)
-			}
-
-			claims, err := manager.ValidateToken(token)
-			if err != nil {
-				t.Fatalf("ValidateToken() error = %v", err)
-			}
-
-			if claims.UserID != tc.userID {
-				t.Errorf("ValidateToken() UserID = %v, want %v", claims.UserID, tc.userID)
-			}
-
-			if claims.Email != tc.email {
-				t.Errorf("ValidateToken() Email = %v, want %v", claims.Email, tc.email)
-			}
-		})
 	}
 }

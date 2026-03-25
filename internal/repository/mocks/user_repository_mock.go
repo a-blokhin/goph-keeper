@@ -128,65 +128,6 @@ func (_c *UserRepository_GetByEmail_Call) RunAndReturn(run func(context.Context,
 	return _c
 }
 
-// GetByID provides a mock function with given fields: ctx, id
-func (_m *UserRepository) GetByID(ctx context.Context, id string) (*model.User, error) {
-	ret := _m.Called(ctx, id)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetByID")
-	}
-
-	var r0 *model.User
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*model.User, error)); ok {
-		return rf(ctx, id)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *model.User); ok {
-		r0 = rf(ctx, id)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*model.User)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// UserRepository_GetByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByID'
-type UserRepository_GetByID_Call struct {
-	*mock.Call
-}
-
-// GetByID is a helper method to define mock.On call
-//   - ctx context.Context
-//   - id string
-func (_e *UserRepository_Expecter) GetByID(ctx interface{}, id interface{}) *UserRepository_GetByID_Call {
-	return &UserRepository_GetByID_Call{Call: _e.mock.On("GetByID", ctx, id)}
-}
-
-func (_c *UserRepository_GetByID_Call) Run(run func(ctx context.Context, id string)) *UserRepository_GetByID_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string))
-	})
-	return _c
-}
-
-func (_c *UserRepository_GetByID_Call) Return(_a0 *model.User, _a1 error) *UserRepository_GetByID_Call {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *UserRepository_GetByID_Call) RunAndReturn(run func(context.Context, string) (*model.User, error)) *UserRepository_GetByID_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // NewUserRepository creates a new instance of UserRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserRepository(t interface {

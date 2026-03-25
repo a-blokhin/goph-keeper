@@ -1,3 +1,5 @@
+//go:generate mockery --name=ListTextDataUsecase --output=./mocks --outpkg=mocks --filename=list_text_data_usecase_mock.go --with-expecter
+
 package list
 
 import (

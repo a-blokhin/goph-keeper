@@ -1,3 +1,5 @@
+//go:generate mockery --name=LoginUsecase --output=./mocks --outpkg=mocks --filename=login_usecase_mock.go --with-expecter
+
 package login
 
 import (

@@ -1,3 +1,5 @@
+//go:generate mockery --name=SyncUsecase --output=./mocks --outpkg=mocks --filename=sync_usecase_mock.go --with-expecter
+
 package sync
 
 import (

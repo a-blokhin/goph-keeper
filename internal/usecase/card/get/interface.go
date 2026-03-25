@@ -1,3 +1,5 @@
+//go:generate mockery --name=GetCardUsecase --output=./mocks --outpkg=mocks --filename=get_card_usecase_mock.go --with-expecter
+
 package cardget
 
 import (

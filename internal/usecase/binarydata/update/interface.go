@@ -1,3 +1,5 @@
+//go:generate mockery --name=UpdateBinaryDataUsecase --output=./mocks --outpkg=mocks --filename=update_binary_data_usecase_mock.go --with-expecter
+
 package update
 
 import (

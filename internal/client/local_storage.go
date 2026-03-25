@@ -22,12 +22,20 @@ type LocalStorage struct {
 	mu     sync.RWMutex
 }
 
+type SerializableLocalData struct {
+	Credentials []map[string]interface{} `json:"credentials"`
+	TextData    []map[string]interface{} `json:"text_data"`
+	BinaryData  []map[string]interface{} `json:"binary_data"`
+	Cards       []map[string]interface{} `json:"cards"`
+	LastSync    time.Time                `json:"last_sync"`
+}
+
 type LocalData struct {
-	Credentials []*proto.CredentialResponse `json:"credentials"`
-	TextData    []*proto.TextDataResponse   `json:"text_data"`
-	BinaryData  []*proto.BinaryDataResponse `json:"binary_data"`
-	Cards       []*proto.CardResponse       `json:"cards"`
-	LastSync    time.Time                   `json:"last_sync"`
+	Credentials []*proto.CredentialResponse
+	TextData    []*proto.TextDataResponse
+	BinaryData  []*proto.BinaryDataResponse
+	Cards       []*proto.CardResponse
+	LastSync    time.Time
 }
 
 func NewLocalStorage(logger *zap.Logger) (*LocalStorage, error) {
@@ -67,11 +75,142 @@ func (s *LocalStorage) load() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if err := json.Unmarshal(dataBytes, &s.data); err != nil {
+	var serializableData SerializableLocalData
+	if err := json.Unmarshal(dataBytes, &serializableData); err != nil {
 		return fmt.Errorf("failed to unmarshal local data: %w", err)
 	}
 
+	s.data = s.deserializeData(&serializableData)
+
 	return nil
+}
+
+func (s *LocalStorage) serializeData() *SerializableLocalData {
+	serializable := &SerializableLocalData{
+		LastSync: s.data.LastSync,
+	}
+
+	// Serialize credentials
+	for _, cred := range s.data.Credentials {
+		credMap := map[string]interface{}{
+			"id":       cred.GetId(),
+			"title":    cred.GetTitle(),
+			"login":    cred.GetLogin(),
+			"password": cred.GetPassword(),
+			"meta":     cred.GetMeta(),
+			"version":  cred.GetVersion(),
+		}
+		serializable.Credentials = append(serializable.Credentials, credMap)
+	}
+
+	// Serialize text data
+	for _, text := range s.data.TextData {
+		textMap := map[string]interface{}{
+			"id":      text.GetId(),
+			"title":   text.GetTitle(),
+			"data":    text.GetData(),
+			"meta":    text.GetMeta(),
+			"version": text.GetVersion(),
+		}
+		serializable.TextData = append(serializable.TextData, textMap)
+	}
+
+	// Serialize binary data
+	for _, binary := range s.data.BinaryData {
+		binaryMap := map[string]interface{}{
+			"id":      binary.GetId(),
+			"title":   binary.GetTitle(),
+			"data":    binary.GetData(),
+			"meta":    binary.GetMeta(),
+			"version": binary.GetVersion(),
+		}
+		serializable.BinaryData = append(serializable.BinaryData, binaryMap)
+	}
+
+	// Serialize cards
+	for _, card := range s.data.Cards {
+		cardMap := map[string]interface{}{
+			"id":          card.GetId(),
+			"title":       card.GetTitle(),
+			"card_number": card.GetCardNumber(),
+			"card_holder": card.GetCardHolder(),
+			"expiry":      card.GetExpiry(),
+			"cvv":         card.GetCvv(),
+			"meta":        card.GetMeta(),
+			"version":     card.GetVersion(),
+		}
+		serializable.Cards = append(serializable.Cards, cardMap)
+	}
+
+	return serializable
+}
+
+func (s *LocalStorage) deserializeData(serializable *SerializableLocalData) *LocalData {
+	data := &LocalData{
+		LastSync: serializable.LastSync,
+	}
+
+	// Deserialize credentials
+	for _, credMap := range serializable.Credentials {
+		cred := proto.CredentialResponse_builder{
+			Id:       stringPtr(credMap["id"].(string)),
+			Title:    stringPtr(credMap["title"].(string)),
+			Login:    stringPtr(credMap["login"].(string)),
+			Password: stringPtr(credMap["password"].(string)),
+			Meta:     stringPtr(credMap["meta"].(string)),
+			Version:  int32Ptr(int32(credMap["version"].(float64))),
+		}.Build()
+		data.Credentials = append(data.Credentials, cred)
+	}
+
+	// Deserialize text data
+	for _, textMap := range serializable.TextData {
+		text := proto.TextDataResponse_builder{
+			Id:      stringPtr(textMap["id"].(string)),
+			Title:   stringPtr(textMap["title"].(string)),
+			Data:    stringPtr(textMap["data"].(string)),
+			Meta:    stringPtr(textMap["meta"].(string)),
+			Version: int32Ptr(int32(textMap["version"].(float64))),
+		}.Build()
+		data.TextData = append(data.TextData, text)
+	}
+
+	// Deserialize binary data
+	for _, binaryMap := range serializable.BinaryData {
+		binary := proto.BinaryDataResponse_builder{
+			Id:      stringPtr(binaryMap["id"].(string)),
+			Title:   stringPtr(binaryMap["title"].(string)),
+			Data:    []byte(binaryMap["data"].(string)),
+			Meta:    stringPtr(binaryMap["meta"].(string)),
+			Version: int32Ptr(int32(binaryMap["version"].(float64))),
+		}.Build()
+		data.BinaryData = append(data.BinaryData, binary)
+	}
+
+	// Deserialize cards
+	for _, cardMap := range serializable.Cards {
+		card := proto.CardResponse_builder{
+			Id:         stringPtr(cardMap["id"].(string)),
+			Title:      stringPtr(cardMap["title"].(string)),
+			CardNumber: stringPtr(cardMap["card_number"].(string)),
+			CardHolder: stringPtr(cardMap["card_holder"].(string)),
+			Expiry:     stringPtr(cardMap["expiry"].(string)),
+			Cvv:        stringPtr(cardMap["cvv"].(string)),
+			Meta:       stringPtr(cardMap["meta"].(string)),
+			Version:    int32Ptr(int32(cardMap["version"].(float64))),
+		}.Build()
+		data.Cards = append(data.Cards, card)
+	}
+
+	return data
+}
+
+func stringPtr(s string) *string {
+	return &s
+}
+
+func int32Ptr(i int32) *int32 {
+	return &i
 }
 
 func (s *LocalStorage) save() error {
@@ -82,7 +221,8 @@ func (s *LocalStorage) save() error {
 
 	dataPath := filepath.Join(homeDir, localDataFile)
 
-	dataBytes, err := json.MarshalIndent(s.data, "", "  ")
+	serializableData := s.serializeData()
+	dataBytes, err := json.MarshalIndent(serializableData, "", "  ")
 	if err != nil {
 		return fmt.Errorf("failed to marshal local data: %w", err)
 	}

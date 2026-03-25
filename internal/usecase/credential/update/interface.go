@@ -1,3 +1,5 @@
+//go:generate mockery --name=UpdateCredentialUsecase --output=./mocks --outpkg=mocks --filename=update_credential_usecase_mock.go --with-expecter
+
 package update
 
 import (
