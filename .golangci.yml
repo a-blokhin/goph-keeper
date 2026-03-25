@@ -1,0 +1,96 @@
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gofmt
+    - goimports
+    - misspell
+    - revive
+
+linters-settings:
+  revive:
+    rules:
+      - name: exported
+        severity: warning
+      - name: var-naming
+        severity: warning
+      - name: blank-imports
+        severity: warning
+      - name: context
+        severity: warning
+      - name: errorf
+        severity: warning
+      - name: error-strings
+        severity: warning
+      - name: error-naming
+        severity: warning
+      - name: if-return
+        severity: warning
+      - name: increment-decrement
+        severity: warning
+      - name: var-declaration
+        severity: warning
+      - name: package-comments
+        severity: warning
+      - name: range
+        severity: warning
+      - name: receiver-naming
+        severity: warning
+      - name: time-naming
+        severity: warning
+      - name: unexported-return
+        severity: warning
+      - name: indent-error-flow
+        severity: warning
+      - name: errorf
+        severity: warning
+      - name: empty-block
+        severity: warning
+      - name: superfluous-else
+        severity: warning
+      - name: unused-parameter
+        severity: warning
+      - name: unreachable-code
+        severity: warning
+      - name: redefines-builtin-id
+        severity: warning
+
+issues:
+  exclude-use-default: false
+  exclude:
+    - "undefined: migrate"
+    - "undefined: pgx"
+    - "undefined: jwt"
+    - "claims.ExpiresAt undefined"
+    - "Called undefined"
+    - "AssertExpectations undefined"
+    - "SA9003:"
+
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - govet
+
+    - path: internal/
+      text: "underscore"
+      linters:
+        - golint
+        - stylecheck
+
+    - linters:
+        - lll
+      source: "^//go:generate "
+
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly

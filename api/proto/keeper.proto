@@ -1,0 +1,218 @@
+edition = "2024";
+
+package keeper;
+
+option go_package = "github.com/a-blokhin/goph-keeper/api/proto";
+
+import "google/protobuf/go_features.proto";
+import "google/protobuf/timestamp.proto";
+
+option features.(pb.go).api_level = API_OPAQUE;
+
+service KeeperService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
+  
+  rpc CreateCredential(CredentialRequest) returns (CredentialResponse);
+  rpc GetCredential(GetRequest) returns (CredentialResponse);
+  rpc UpdateCredential(UpdateCredentialRequest) returns (CredentialResponse);
+  rpc DeleteCredential(DeleteRequest) returns (DeleteResponse);
+  rpc ListCredentials(ListCredentialsRequest) returns (CredentialsListResponse);
+  
+  rpc CreateTextData(TextDataRequest) returns (TextDataResponse);
+  rpc GetTextData(GetRequest) returns (TextDataResponse);
+  rpc UpdateTextData(UpdateTextDataRequest) returns (TextDataResponse);
+  rpc DeleteTextData(DeleteRequest) returns (DeleteResponse);
+  rpc ListTextData(ListTextDataRequest) returns (TextDataListResponse);
+  
+  rpc CreateBinaryData(BinaryDataRequest) returns (BinaryDataResponse);
+  rpc GetBinaryData(GetRequest) returns (BinaryDataResponse);
+  rpc UpdateBinaryData(UpdateBinaryDataRequest) returns (BinaryDataResponse);
+  rpc DeleteBinaryData(DeleteRequest) returns (DeleteResponse);
+  rpc ListBinaryData(ListBinaryDataRequest) returns (BinaryDataListResponse);
+  
+  rpc CreateCard(CardRequest) returns (CardResponse);
+  rpc GetCard(GetRequest) returns (CardResponse);
+  rpc UpdateCard(UpdateCardRequest) returns (CardResponse);
+  rpc DeleteCard(DeleteRequest) returns (DeleteResponse);
+  rpc ListCards(ListCardsRequest) returns (CardsListResponse);
+  
+  rpc Sync(SyncRequest) returns (SyncResponse);
+}
+
+message RegisterRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message RegisterResponse {
+  string token = 1;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token = 1;
+}
+
+message CredentialRequest {
+  string title = 1;
+  string login = 2;
+  string password = 3;
+  string meta = 4;
+}
+
+message UpdateCredentialRequest {
+  string id = 1;
+  string title = 2;
+  string login = 3;
+  string password = 4;
+  string meta = 5;
+  int32 version = 6;
+}
+
+message CredentialResponse {
+  string id = 1;
+  string title = 2;
+  string login = 3;
+  string password = 4;
+  string meta = 5;
+  int32 version = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message CredentialsListResponse {
+  repeated CredentialResponse credentials = 1;
+}
+
+message TextDataRequest {
+  string title = 1;
+  string data = 2;
+  string meta = 3;
+}
+
+message UpdateTextDataRequest {
+  string id = 1;
+  string title = 2;
+  string data = 3;
+  string meta = 4;
+  int32 version = 5;
+}
+
+message TextDataResponse {
+  string id = 1;
+  string title = 2;
+  string data = 3;
+  string meta = 4;
+  int32 version = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message TextDataListResponse {
+  repeated TextDataResponse text_data = 1;
+}
+
+message BinaryDataRequest {
+  string title = 1;
+  bytes data = 2;
+  string meta = 3;
+}
+
+message UpdateBinaryDataRequest {
+  string id = 1;
+  string title = 2;
+  bytes data = 3;
+  string meta = 4;
+  int32 version = 5;
+}
+
+message BinaryDataResponse {
+  string id = 1;
+  string title = 2;
+  bytes data = 3;
+  string meta = 4;
+  int32 version = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message BinaryDataListResponse {
+  repeated BinaryDataResponse binary_data = 1;
+}
+
+message CardRequest {
+  string title = 1;
+  string card_number = 2;
+  string card_holder = 3;
+  string expiry = 4;
+  string cvv = 5;
+  string meta = 6;
+}
+
+message UpdateCardRequest {
+  string id = 1;
+  string title = 2;
+  string card_number = 3;
+  string card_holder = 4;
+  string expiry = 5;
+  string cvv = 6;
+  string meta = 7;
+  int32 version = 8;
+}
+
+message CardResponse {
+  string id = 1;
+  string title = 2;
+  string card_number = 3;
+  string card_holder = 4;
+  string expiry = 5;
+  string cvv = 6;
+  string meta = 7;
+  int32 version = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
+message CardsListResponse {
+  repeated CardResponse cards = 1;
+}
+
+message GetRequest {
+  string id = 1;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+}
+
+message ListCredentialsRequest {
+}
+
+message ListTextDataRequest {
+}
+
+message ListBinaryDataRequest {
+}
+
+message ListCardsRequest {
+}
+
+message SyncRequest {
+  google.protobuf.Timestamp last_sync = 1;
+}
+
+message SyncResponse {
+  repeated CredentialResponse credentials = 1;
+  repeated TextDataResponse text_data = 2;
+  repeated BinaryDataResponse binary_data = 3;
+  repeated CardResponse cards = 4;
+  google.protobuf.Timestamp server_time = 5;
+}
